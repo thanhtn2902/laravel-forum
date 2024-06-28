@@ -11,7 +11,7 @@ test('api tokens can be created', function () {
     }
 
     $response = $this->post('/user/api-tokens', [
-        'name' => 'Test Token',
+        'name'        => 'Test Token',
         'permissions' => [
             'read',
             'update',
@@ -24,5 +24,5 @@ test('api tokens can be created', function () {
         ->can('read')->toBeTrue()
         ->can('delete')->toBeFalse();
 })->skip(function () {
-    return ! Features::hasApiFeatures();
+    return !Features::hasApiFeatures();
 }, 'API support is not enabled.');

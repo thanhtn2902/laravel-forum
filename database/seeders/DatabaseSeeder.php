@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             ->has(Post::factory(45))
             ->has(Comment::factory(120)->recycle($posts))
             ->create([
-                'name' => 'Nathan Truong',
+                'name'  => 'Nathan Truong',
                 'email' => 'nathan@example.com',
             ]);
     }

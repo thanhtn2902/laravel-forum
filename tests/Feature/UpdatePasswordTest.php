@@ -7,8 +7,8 @@ test('password can be updated', function () {
     $this->actingAs($user = User::factory()->create());
 
     $response = $this->put('/user/password', [
-        'current_password' => 'password',
-        'password' => 'new-password',
+        'current_password'      => 'password',
+        'password'              => 'new-password',
         'password_confirmation' => 'new-password',
     ]);
 
@@ -19,8 +19,8 @@ test('current password must be correct', function () {
     $this->actingAs($user = User::factory()->create());
 
     $response = $this->put('/user/password', [
-        'current_password' => 'wrong-password',
-        'password' => 'new-password',
+        'current_password'      => 'wrong-password',
+        'password'              => 'new-password',
         'password_confirmation' => 'new-password',
     ]);
 
@@ -33,8 +33,8 @@ test('new passwords must match', function () {
     $this->actingAs($user = User::factory()->create());
 
     $response = $this->put('/user/password', [
-        'current_password' => 'password',
-        'password' => 'new-password',
+        'current_password'      => 'password',
+        'password'              => 'new-password',
         'password_confirmation' => 'wrong-password',
     ]);
 

@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
-   use HasFactory;
+    use HasFactory;
 
-   public function user(): BelongsTo
-   {
-      return $this->belongsTo(User::class);
-   }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
-   public function post(): BelongsTo
-   {
-      return $this->belongsTo(Post::class);
-   }
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
+    }
 }

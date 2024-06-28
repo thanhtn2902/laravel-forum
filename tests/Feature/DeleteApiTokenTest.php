@@ -12,8 +12,8 @@ test('api tokens can be deleted', function () {
     }
 
     $token = $user->tokens()->create([
-        'name' => 'Test Token',
-        'token' => Str::random(40),
+        'name'      => 'Test Token',
+        'token'     => Str::random(40),
         'abilities' => ['create', 'read'],
     ]);
 
@@ -21,5 +21,5 @@ test('api tokens can be deleted', function () {
 
     expect($user->fresh()->tokens)->toHaveCount(0);
 })->skip(function () {
-    return ! Features::hasApiFeatures();
+    return !Features::hasApiFeatures();
 }, 'API support is not enabled.');
