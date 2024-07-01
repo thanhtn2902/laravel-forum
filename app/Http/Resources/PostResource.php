@@ -19,7 +19,7 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'body'  => $this->body,
-            'user' => UserResource::make($this->user),
+            'user' => $this->whenLoaded('user', fn() => UserResource::make($this->user)),
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
         ];

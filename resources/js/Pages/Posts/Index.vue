@@ -8,6 +8,7 @@
                     </span>
                 </li>
             </ul>
+            <Pagination :meta="posts.meta"/>
         </Container>
     </AppLayout>
 </template>
@@ -15,6 +16,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import Container from '@/Components/Container.vue';
+import Pagination from '@/Components/Pagination.vue';
 
 defineProps(['posts']);
 
