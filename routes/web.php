@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\PostController;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,4 +36,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+Route::controller(PostController::class)->prefix('posts')->group(function (Router $router) {
+    $router->get('/', [PostController::class, 'index'])->name('posts.index');
+    $router->get('/{post}', [PostController::class, 'show'])->name('posts.show');
+});
