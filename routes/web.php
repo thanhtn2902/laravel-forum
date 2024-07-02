@@ -1,10 +1,11 @@
 <?php
 
 use Inertia\Inertia;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\PostController;
-use Illuminate\Routing\Router;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,11 @@ Route::middleware([
 });
 
 Route::controller(PostController::class)->prefix('posts')->group(function (Router $router) {
-    $router->get('/', [PostController::class, 'index'])->name('posts.index');
-    $router->get('/{post}', [PostController::class, 'show'])->name('posts.show');
+    $router->get('/', 'index')->name('posts.index');
+    $router->get('/{post}', 'show')->name('posts.show');
+});
+
+
+Route::controller(CommentController::class)->prefix('post/{post}')->group(function (Router $router) {
+    $router->post('/comments', 'store')->name('posts.comments.store');
 });

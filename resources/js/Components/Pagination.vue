@@ -2,8 +2,10 @@
     <div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
         <div class="flex flex-1 justify-between sm:hidden">
             <Link :href="previousUrl"
+                :only="only"
                 class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</Link>
             <Link :href="nextUrl"
+                :only="only"
                 class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</Link>
         </div>
         <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
@@ -34,6 +36,7 @@
                             'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0': !link.active
                         }"
                         v-html="link.label"
+                        :only="only"
                     >
                     </Link>
                 </nav>
@@ -47,7 +50,16 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps(['meta']);
+const props = defineProps({
+    meta: {
+        type: Object,
+        required: true
+    },
+    only: {
+        type: Array,
+        default: () => ([])
+    }
+});
 
 const previousUrl = computed(() => props.meta.links[0].url)
 const nextUrl = computed(() => [...props.meta.links].reverse()[0].url)
