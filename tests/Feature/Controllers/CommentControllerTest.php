@@ -1,10 +1,19 @@
 <?php
+namespace Tests\Feature\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\delete;
+use function Pest\Laravel\post;
+
+it('required authentication to post a comment', function () {
+    post(route('posts.comments.store', Post::factory()->create()))
+        ->assertRedirect(route('login'));
+});
+
 
 it('can store a comment', function() {
     $user = User::factory()->create();
@@ -47,3 +56,32 @@ it('required a valid body', function($value) {
     true,
     str_repeat('a', 2501)
 ]);
+
+it('required authentication to delete comment', function () {
+    delete(route('comments.destroy', Comment::factory()->create()))
+        ->assertRedirect(route('login'));
+});
+
+it('can delete a comment', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)->delete(route('comments.destroy', $comment));
+
+    $this->assertModelMissing($comment);
+});
+
+it('redirect to show page when delete success', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)
+        ->delete(route('comments.destroy', $comment))
+        ->assertRedirect(route('posts.show', $comment->post_id));
+});
+
+it('prevent deleting a comment not belong to you', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs(User::factory()->create())
+        ->delete(route('comments.destroy', $comment->id))
+        ->assertForbidden();
+});

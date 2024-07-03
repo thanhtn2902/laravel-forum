@@ -35,14 +35,15 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::controller(CommentController::class)->prefix('post/{post}')->group(function (Router $router) {
+        $router->post('/comments', 'store')->name('posts.comments.store');
+    });
+
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 Route::controller(PostController::class)->prefix('posts')->group(function (Router $router) {
     $router->get('/', 'index')->name('posts.index');
     $router->get('/{post}', 'show')->name('posts.show');
-});
-
-
-Route::controller(CommentController::class)->prefix('post/{post}')->group(function (Router $router) {
-    $router->post('/comments', 'store')->name('posts.comments.store');
 });
