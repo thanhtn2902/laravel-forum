@@ -96,3 +96,11 @@ it('prevents deleting a comment posted over an hour ago', function() {
         ->delete(route('comments.destroy', $comment->id))
         ->assertForbidden();
 });
+
+it('redirects to the post show page with query parameter', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)
+        ->delete(route('comments.destroy', ['comment' => $comment->id, 'page' => 2]))
+        ->assertRedirect(route('posts.show', ['post' => $comment->post_id, 'page' => 2]));
+});
