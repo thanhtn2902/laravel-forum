@@ -23,7 +23,8 @@ class CommentResource extends JsonResource
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
             'can'   => [
-                'delete' => $request->user()?->can('delete', $this->resource)
+                'delete' => $request->user()?->can('delete', $this->resource),
+                'update' => $request->user()?->can('update', $this->resource)
             ]
         ];
     }
