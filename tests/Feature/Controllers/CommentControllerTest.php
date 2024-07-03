@@ -8,6 +8,7 @@ use App\Models\User;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\post;
+use function Pest\Laravel\put;
 
 it('required authentication to post a comment', function () {
     post(route('posts.comments.store', Post::factory()->create()))
@@ -41,7 +42,7 @@ it('redirects to the post show page', function() {
         ->assertRedirect(route('posts.show', $post));
 });
 
-it('required a valid body', function($value) {
+it('required a valid body when create comment', function($value) {
     $post = Post::factory()->create();
 
     actingAs(User::factory()->create())
@@ -104,3 +105,61 @@ it('redirects to the post show page with query parameter', function() {
         ->delete(route('comments.destroy', ['comment' => $comment->id, 'page' => 2]))
         ->assertRedirect(route('posts.show', ['post' => $comment->post_id, 'page' => 2]));
 });
+
+it('required authentication to update comment', function() {
+    put(route('comments.update', Comment::factory()->create()))
+        ->assertRedirect(route('login'));
+});
+
+it('can update a comment', function() {
+    $comment = Comment::factory()->create(['body' => 'This is old post']);
+
+    $newBody = 'This post has been update';
+
+    actingAs($comment->user)
+        ->put(route('comments.update', $comment), ['body' => $newBody]);
+
+    $this->assertDatabaseHas(Comment::class, [
+        'id' => $comment->id,
+        'body' => $newBody
+    ]);
+});
+
+it('redirect to the post show page', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)
+        ->put(route('comments.update', $comment), ['body' => 'This post has been update'])
+        ->assertRedirect(route('posts.show', $comment->post));
+});
+
+it('redirect to the correct page of comments', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)
+        ->put(route('comments.update', ['comment' => $comment, 'page' => 2]), ['body' => 'This post has been update'])
+        ->assertRedirect(route('posts.show', ['post' => $comment->post, 'page' => 2]));
+});
+
+it('cannot update comment from another user', function() {
+    $comment = Comment::factory()->create();
+
+    actingAs(User::factory()->create())
+        ->put(route('comments.update', $comment), ['body' => 'This post has been update'])
+        ->assertForbidden();
+});
+
+it('required a valid body when updating a comment', function($body) {
+    $comment = Comment::factory()->create();
+
+    actingAs($comment->user)
+        ->put(route('comments.update', $comment), ['body' => $body])
+        ->assertInvalid('body');
+})
+->with([
+    null,
+    1,
+    1.5,
+    true,
+    str_repeat('a', 2501)
+]);
