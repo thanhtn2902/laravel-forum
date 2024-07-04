@@ -10,8 +10,6 @@
                 <form @submit.prevent="$emit('edit', comment.id)" v-if="comment.can?.update">
                     <button type="submit" class="font-mono text-xs hover:font-semibold">Edit</button>
                 </form>
-            </div>
-            <div class="mt-2 text-right empty:hidden">
                 <form @submit.prevent="$emit('delete', comment.id)" v-if="comment.can?.delete">
                     <button type="submit" class="font-mono text-red-700 text-xs hover:font-semibold">Delete</button>
                 </form>
