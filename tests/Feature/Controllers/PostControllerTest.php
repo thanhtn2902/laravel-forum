@@ -14,7 +14,7 @@ use App\Http\Resources\CommentResource;
 beforeEach(function() {
     $this->validateData = [
         'title' => 'Hello World',
-        'body' => 'This is my first post'
+        'body' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem doloremque inventore nesciunt, vero accusantium illum hic sequi deserunt rerum aliquid, numquam, nam quis. Fuga cumque, similique, perferendis esse quibusdam saepe neque, sint nobis voluptate veritatis nostrum optio ipsam minus rem totam delectus animi excepturi dolor repudiandae! Illum ratione deserunt soluta doloremque aliquam, repellendus voluptates rerum in adipisci sapiente officiis nobis nam animi? Iste voluptates nemo sequi beatae sint debitis quod quidem sed soluta omnis mollitia fugit adipisci officiis accusantium temporibus, minima, repellat impedit. Inventore reiciendis iste, earum ratione molestiae explicabo saepe rem? Aperiam aut consectetur minus vero amet reprehenderit suscipit?'
     ];
 });
 
