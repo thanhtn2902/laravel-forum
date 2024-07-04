@@ -39,7 +39,7 @@ it('can show a post', function () {
 
     $post->load('user');
 
-    get(route('posts.show', $post))
+    get($post->showRoute())
         ->assertComponent('Posts/Show')
         ->assertHasResource('post', PostResource::make($post));
 });
@@ -49,7 +49,7 @@ it('pass comment to the view', function () {
     $comments = Comment::factory(2)->for($post)->create();
 
     $comments->load('user');
-    get(route('posts.show', $post))
+    get($post->showRoute())
         ->assertHasPaginatedResource('comments', CommentResource::collection($comments->reverse()));
 });
 
@@ -74,7 +74,7 @@ it('redirect to the post page', function() {
 
     actingAs($user)
         ->post(route('posts.store'), $this->validateData)
-        ->assertRedirect(route('posts.show', Post::latest('id')->first()));
+        ->assertRedirect(Post::latest('id')->first()->showRoute());
 });
 
 

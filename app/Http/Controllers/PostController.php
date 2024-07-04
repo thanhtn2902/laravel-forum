@@ -56,7 +56,7 @@ class PostController extends Controller
     public function show(Request $request, Post $post)
     {
         if (!Str::contains($post->showRoute(), $request->path())) {
-            return redirect($post->showRoute($request->query()));
+            return redirect($post->showRoute($request->query()), status: 301);
         }
 
         $post->load('user');

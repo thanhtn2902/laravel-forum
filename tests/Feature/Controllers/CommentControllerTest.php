@@ -32,14 +32,14 @@ it('can store a comment', function() {
 
 });
 
-it('redirects to the post show page', function() {
+it('redirects to the post show page after create post', function() {
     $post = Post::factory()->create();
 
     actingAs(User::factory()->create())
         ->post(route('posts.comments.store', $post), [
             'body' => 'This is a comment',
         ])
-        ->assertRedirect(route('posts.show', $post));
+        ->assertRedirect($post->showRoute());
 });
 
 it('required a valid body when create comment', function($value) {
@@ -76,7 +76,7 @@ it('redirect to show page when delete success', function() {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', $comment))
-        ->assertRedirect(route('posts.show', $comment->post_id));
+        ->assertRedirect($comment->post->showRoute());
 });
 
 it('prevent deleting a comment not belong to you', function() {
@@ -103,7 +103,7 @@ it('redirects to the post show page with query parameter', function() {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', ['comment' => $comment->id, 'page' => 2]))
-        ->assertRedirect(route('posts.show', ['post' => $comment->post_id, 'page' => 2]));
+        ->assertRedirect($comment->post->showRoute(['page' => 2]));
 });
 
 it('required authentication to update comment', function() {
@@ -125,12 +125,12 @@ it('can update a comment', function() {
     ]);
 });
 
-it('redirect to the post show page', function() {
+it('redirect to the post show page after update post', function() {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
-        ->put(route('comments.update', $comment), ['body' => 'This post has been update'])
-        ->assertRedirect(route('posts.show', $comment->post));
+        ->put(route('comments.update', $comment), ['body' => 'This comment has been update'])
+        ->assertRedirect($comment->post->showRoute());
 });
 
 it('redirect to the correct page of comments', function() {
@@ -138,7 +138,7 @@ it('redirect to the correct page of comments', function() {
 
     actingAs($comment->user)
         ->put(route('comments.update', ['comment' => $comment, 'page' => 2]), ['body' => 'This post has been update'])
-        ->assertRedirect(route('posts.show', ['post' => $comment->post, 'page' => 2]));
+        ->assertRedirect($comment->post->showRoute(['page' => 2]));
 });
 
 it('cannot update comment from another user', function() {
