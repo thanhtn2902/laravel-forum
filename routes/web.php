@@ -36,10 +36,8 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    Route::resource('posts', PostController::class)->only(['store']);
     Route::resource('posts.comments', CommentController::class)->shallow()->only(['store', 'update', 'destroy']);
 });
 
-Route::controller(PostController::class)->prefix('posts')->group(function (Router $router) {
-    $router->get('/', 'index')->name('posts.index');
-    $router->get('/{post}', 'show')->name('posts.show');
-});
+Route::resource('posts', PostController::class)->only(['index', 'show']);
