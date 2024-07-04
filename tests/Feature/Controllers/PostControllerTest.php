@@ -97,3 +97,13 @@ it('required a valid data when create post', function($data, array|string $error
     [['body' => str_repeat('a', 10001)], 'body'],
     [['body' => str_repeat('a', 99)], 'body'],
 ]);
+
+it('required authentication to access create post page', function() {
+    get(route('posts.create'))->assertRedirect(route('login'));
+});
+
+it('returns the correct component', function() {
+    actingAs(User::factory()->create())
+        ->get(route('posts.create'))
+        ->assertComponent('Posts/Create');
+});
