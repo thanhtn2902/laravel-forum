@@ -20,7 +20,7 @@ import ConfirmationModal from '@/Components/ConfirmationModal.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue'
 import { useConfirm } from '@/Utilities/Composables/useConfirm'
-import { nextTick, ref } from 'vue';
+import { nextTick, ref, watchEffect  } from 'vue';
 
 const { state, confirm, cancel } = useConfirm()
 
