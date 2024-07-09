@@ -14,7 +14,7 @@
                 <form v-if="$page.props.auth.user" @submit.prevent="submit">
                     <div>
                         <InputLabel for="body" class="sr-only">Comment</InputLabel>
-                        <TextArea id="body" v-model="commentForm.body" placeholder="Your comment here!" rows="4" ref="commentTextAreaRef" />
+                        <MarkdownEditor id="body" v-model="commentForm.body" placeholder="Your comment here!" ref="commentTextAreaRef" editor-class="min-h-[160px]" />
                         <InputError :message="commentForm.errors.body" class="mt-2"/>
                     </div>
 
@@ -55,13 +55,13 @@ import Pagination from '@/Components/Pagination.vue';
 import Comment from '@/Components/Comment.vue'
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextArea from '@/Components/TextArea.vue';
 import InputError from '@/Components/InputError.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { computed, ref } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { relativeDate } from '@/Utilities/Date.js'
 import { useConfirm } from '@/Utilities/Composables/useConfirm.js';
+import MarkdownEditor from '@/Components/MarkdownEditor.vue';
 
 const props = defineProps(['post', 'comments'])
 

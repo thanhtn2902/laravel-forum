@@ -124,9 +124,15 @@ import { watch } from "vue";
 import { Markdown } from "tiptap-markdown";
 import 'remixicon/fonts/remixicon.css'
 import { Link } from '@tiptap/extension-link'
+import Placeholder from "@tiptap/extension-placeholder";
 
 const props = defineProps({
-    modelValue: ''
+    modelValue: '',
+    editorClass: {
+        type: String,
+        default: 'min-h-[512px]'
+    },
+    placeholder: ''
 })
 
 const editor = useEditor({
@@ -139,12 +145,15 @@ const editor = useEditor({
             codeBlock: false
         }),
         Link,
-        Markdown
+        Markdown,
+        Placeholder.configure({
+            placeholder: props.placeholder
+        })
     ],
     onUpdate: () => emit('update:modelValue', editor.value?.storage.markdown.getMarkdown()),
     editorProps: {
         attributes: {
-            class: 'min-h-[512px] prose prose-sm max-w-none py-1.5 px-3',
+            class: `prose prose-sm max-w-none py-1.5 px-3 ${props.editorClass}`,
         },
     },
 })
@@ -163,6 +172,8 @@ const promptUserForHref = () => {
     return editor.value?.chain().focus().setLink({href, target: '_blank'}).run()
 }
 
+defineExpose({ focus: () => editor.value?.commands.focus()})
+
 watch(() => props.modelValue, (value) => {
     if (value === editor.value?.storage.markdown.getMarkdown()) {
         return
@@ -172,3 +183,10 @@ watch(() => props.modelValue, (value) => {
 }, { immediate: true })
 
 </script>
+
+<style scoped>
+:deep(.tiptap p.is-editor-empty:first-child::before) {
+    @apply text-gray-400 float-left h-0 pointer-events-none text-[16px];
+    content: attr(data-placeholder);
+}
+</style>
