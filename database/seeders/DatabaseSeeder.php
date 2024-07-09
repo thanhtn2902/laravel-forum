@@ -19,12 +19,13 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(10)->create();
 
         $posts = Post::factory(200)
+            ->withFixtures()
             ->has(Comment::factory(15)->recycle($users))
             ->recycle($users)
             ->create();
 
         User::factory()
-            ->has(Post::factory(45))
+            ->has(Post::factory(45)->withFixtures())
             ->has(Comment::factory(120)->recycle($posts))
             ->create([
                 'name'  => 'Nathan Truong',
