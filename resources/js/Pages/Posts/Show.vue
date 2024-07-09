@@ -5,10 +5,7 @@
 
             <span class="block mt-1 text-sm text-gray-600">{{ postedDate }} ago by {{ post.user.name }}</span>
 
-            <article class="mt-5">
-                <pre class="-indent-20 text-wrap font-sans">
-                    {{ post.body }}
-                </pre>
+            <article class="mt-5 prose prose-sm max-w-none" v-html="post.html">
             </article>
 
             <div class="mt-12">
