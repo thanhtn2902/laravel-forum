@@ -1,7 +1,6 @@
 <?php
 
 use Inertia\Inertia;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\PostController;

@@ -12,7 +12,20 @@
 
                 <div>
                     <InputLabel for="body" class="sr-only">Body</InputLabel>
-                    <MarkdownEditor v-model="form.body" placeholder="What's on your mind?..."/>
+                    <MarkdownEditor v-model="form.body" placeholder="What's on your mind?...">
+                        <template #toolbar="{ editor }">
+                            <button
+                                v-if="!isProduction"
+                                @click="autofill"
+                                type="button"
+                                class="px-3 py-2 transition duration-300 hover:duration-150"
+                                :class=" [ editor.isActive('heading', { level: 4 }) ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
+                                title="Heading 3"
+                            >
+                                <i class="ri-article-line"></i>
+                            </button>
+                        </template>
+                    </MarkdownEditor>
                     <InputError :message="form.errors.body" class="mt-1"/>
                 </div>
 
@@ -33,9 +46,9 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import TextArea from '@/Components/TextArea.vue';
 import { useForm } from '@inertiajs/vue3';
 import MarkdownEditor from '@/Components/MarkdownEditor.vue';
+import { isProduction } from '@/Utilities/environment';
 
 const form = useForm({
     'body': '',
@@ -43,4 +56,14 @@ const form = useForm({
 })
 
 const createPost = () => form.post(route('posts.store'))
+
+const autofill = async () => {
+    if(isProduction.value) {
+        return
+    }
+    const response = await axios.get('/local/post-content');
+
+    form.title = response.data.title
+    form.body = response.data.body
+}
 </script>
