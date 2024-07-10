@@ -27,7 +27,7 @@ it('should return the correct component', function () {
 it('passes posts to the view', function() {
     $posts = Post::factory(3)->create();
 
-    $posts->load('user');
+    $posts->load(['user', 'topic']);
 
     get(route('posts.index'))
         ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
@@ -37,7 +37,7 @@ it('passes posts to the view', function() {
 it('can show a post', function () {
     $post = Post::factory()->create();
 
-    $post->load('user');
+    $post->load(['user', 'topic']);
 
     get($post->showRoute())
         ->assertComponent('Posts/Show')
@@ -48,7 +48,7 @@ it('pass comment to the view', function () {
     $post = Post::factory()->create();
     $comments = Comment::factory(2)->for($post)->create();
 
-    $comments->load('user');
+    $comments->load(['user', 'topic']);
     get($post->showRoute())
         ->assertHasPaginatedResource('comments', CommentResource::collection($comments->reverse()));
 });

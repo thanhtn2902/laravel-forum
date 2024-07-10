@@ -20,7 +20,7 @@ class PostController extends Controller
     public function index()
     {
         return inertia('Posts/Index', [
-            'posts' => PostResource::collection(Post::with('user')->latest()->latest('id')->paginate())
+            'posts' => PostResource::collection(Post::with(['user', 'topic'])->latest()->latest('id')->paginate())
         ]);
     }
 
@@ -44,6 +44,7 @@ class PostController extends Controller
 
         $post = Post::create([
             ...$data,
+            'slug' => str($data['title'])->slug(),
             'user_id' => $request->user()->id
         ]);
 
@@ -59,7 +60,7 @@ class PostController extends Controller
             return redirect($post->showRoute($request->query()), status: 301);
         }
 
-        $post->load('user');
+        $post->load(['user', 'topic']);
 
         return inertia('Posts/Show', [
             'post' => fn () => PostResource::make($post),

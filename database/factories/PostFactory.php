@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Topic;
 use App\Models\User;
 use App\Support\PostFixtures;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
-use Symfony\Component\Finder\SplFileInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,6 +25,7 @@ class PostFactory extends Factory
 
         return [
             'user_id' => User::factory(),
+            'topic_id' => Topic::factory(),
             'title'   => $title,
             'slug'    => Str::slug($title),
             'body'    => Collection::times(4, fn () => fake()->realText(1000))->join(PHP_EOL . PHP_EOL),
