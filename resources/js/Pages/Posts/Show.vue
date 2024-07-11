@@ -2,7 +2,7 @@
     <AppLayout>
         <Container>
             <PageHeading class="mb-2">{{ post.title }}</PageHeading>
-            <Pill>
+            <Pill :href="route('posts.index', {topic: post.topic.slug})">
                 {{ post.topic.name }}
             </Pill>
 
