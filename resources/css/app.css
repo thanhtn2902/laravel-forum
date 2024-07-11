@@ -5,3 +5,7 @@
 [x-cloak] {
     display: none;
 }
+
+.trigger-hover-transition {
+    @apply transition hover:duration-200 duration-300
+}

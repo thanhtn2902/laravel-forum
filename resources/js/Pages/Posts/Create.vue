@@ -1,7 +1,7 @@
 <template>
     <AppLayout title="Create a Post">
         <Container>
-            <h1 class="text-3xl font-bold">Create Post</h1>
+            <PageHeading>Create a Post</PageHeading>
 
             <form @submit.prevent="createPost" class="space-y-4">
                 <div class="mt-6">
@@ -18,7 +18,7 @@
                                 v-if="!isProduction"
                                 @click="autofill"
                                 type="button"
-                                class="px-3 py-2 transition duration-300 hover:duration-150"
+                                class="px-3 py-2 trigger-hover-transition"
                                 :class=" [ editor.isActive('heading', { level: 4 }) ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                                 title="Heading 3"
                             >
@@ -49,6 +49,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import MarkdownEditor from '@/Components/MarkdownEditor.vue';
 import { isProduction } from '@/Utilities/environment';
+import PageHeading from '@/Components/PageHeading.vue'
 
 const form = useForm({
     'body': '',

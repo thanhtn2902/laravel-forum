@@ -2,14 +2,16 @@
 
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
+use App\Models\Topic;
 
+use App\Models\Comment;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
-use function Pest\Laravel\actingAs;
 
+use function Pest\Laravel\actingAs;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\CommentResource;
+use App\Http\Resources\TopicResource;
 
 beforeEach(function() {
     $this->validateData = [
@@ -106,4 +108,22 @@ it('returns the correct component', function() {
     actingAs(User::factory()->create())
         ->get(route('posts.create'))
         ->assertComponent('Posts/Create');
+});
+
+it('can filter to a topic', function() {
+    $general = Topic::factory()->create();
+    $posts = Post::factory(3)->for($general)->create();
+    $otherPosts = Post::factory(3)->create();
+
+    $posts->load(['user', 'topic']);
+
+    get(route('posts.index', ['topic' => $general]))
+        ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
+});
+
+it('passes the selected topic to the view', function() {
+    $topic = Topic::factory()->create();
+
+    get(route('posts.index', ['topic' => $topic]))
+        ->assertHasResource('selectedTopic', TopicResource::make($topic));
 });

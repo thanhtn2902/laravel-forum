@@ -5,7 +5,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleBold().run()"
                     type="button"
-                    class="px-3 py-2 rounded-tl-md transition duration-300 hover:duration-150"
+                    class="px-3 py-2 rounded-tl-md trigger-hover-transition"
                     :class=" [ editor.isActive('bold') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Bold"
                 >
@@ -16,7 +16,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleItalic().run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('italic') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Italic"
                 >
@@ -27,7 +27,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleStrike().run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('strike') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Strike"
                 >
@@ -38,7 +38,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleBlockquote().run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('blockquote') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Blockquote"
                 >
@@ -49,7 +49,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleBulletList().run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('bulletList') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Bullet list"
                 >
@@ -60,7 +60,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleOrderedList().run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('orderedList') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Order list"
                 >
@@ -71,7 +71,7 @@
                 <button
                     @click="promptUserForHref"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('link') ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Add Link"
                 >
@@ -82,7 +82,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleHeading({ level: 2 }).run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('heading', { level: 2 }) ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Heading 1"
                 >
@@ -93,7 +93,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleHeading({ level: 3 }).run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('heading', { level: 3 }) ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Heading 2"
                 >
@@ -104,7 +104,7 @@
                 <button
                     @click="() => editor.chain().focus().toggleHeading({ level: 4 }).run()"
                     type="button"
-                    class="px-3 py-2 transition duration-300 hover:duration-150"
+                    class="px-3 py-2 trigger-hover-transition"
                     :class=" [ editor.isActive('heading', { level: 4 }) ? 'bg-indigo-500 text-white': 'hover:bg-gray-200']"
                     title="Heading 3"
                 >
