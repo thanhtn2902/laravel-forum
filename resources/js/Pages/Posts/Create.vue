@@ -11,6 +11,16 @@
                 </div>
 
                 <div>
+                    <InputLabel for="topic_id">Select a Topic</InputLabel>
+                    <select v-model="form.topic_id" id="topic_id" class="mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option v-for="topic in topics" :key="topic.id" :value="topic.id">
+                            {{ topic.name }}
+                        </option>
+                    </select>
+                    <InputError :message="form.errors.topic_id" class="mt-1"/>
+                </div>
+
+                <div>
                     <InputLabel for="body" class="sr-only">Body</InputLabel>
                     <MarkdownEditor v-model="form.body" placeholder="What's on your mind?...">
                         <template #toolbar="{ editor }">
@@ -51,8 +61,11 @@ import MarkdownEditor from '@/Components/MarkdownEditor.vue';
 import { isProduction } from '@/Utilities/environment';
 import PageHeading from '@/Components/PageHeading.vue'
 
+const props = defineProps(['topics'])
+
 const form = useForm({
     'body': '',
+    'topic_id': props.topics[0].id,
     'title': ''
 })
 

@@ -1,12 +1,13 @@
 <template>
     <AppLayout>
         <Container>
-            <PageHeading>{{ post.title }}</PageHeading>
+            <PageHeading class="mb-2">{{ post.title }}</PageHeading>
+            <Pill>
+                {{ post.topic.name }}
+            </Pill>
 
-            <span class="block mt-1 text-sm text-gray-600">{{ postedDate }} ago by {{ post.user.name }}</span>
-
-            <article class="mt-5 prose prose-sm max-w-none" v-html="post.html">
-            </article>
+            <span class="block mt-2 text-sm text-gray-600">{{ postedDate }} ago by {{ post.user.name }}</span>
+            <article class="mt-5 prose prose-sm max-w-none" v-html="post.html"></article>
 
             <div class="mt-12">
                 <h2 class="text-2xl font-semibold">Comments</h2>
@@ -63,6 +64,7 @@ import { relativeDate } from '@/Utilities/Date.js'
 import { useConfirm } from '@/Utilities/Composables/useConfirm.js';
 import MarkdownEditor from '@/Components/MarkdownEditor.vue';
 import PageHeading from '@/Components/PageHeading.vue';
+import Pill from '@/Components/Pill.vue';
 
 const props = defineProps(['post', 'comments'])
 

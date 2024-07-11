@@ -14,8 +14,9 @@ use App\Http\Resources\CommentResource;
 use App\Http\Resources\TopicResource;
 
 beforeEach(function() {
-    $this->validateData = [
+    $this->validateData = fn() => [
         'title' => 'Hello World',
+        'topic_id' => Topic::factory()->create()->getKey(),
         'body' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem doloremque inventore nesciunt, vero accusantium illum hic sequi deserunt rerum aliquid, numquam, nam quis. Fuga cumque, similique, perferendis esse quibusdam saepe neque, sint nobis voluptate veritatis nostrum optio ipsam minus rem totam delectus animi excepturi dolor repudiandae! Illum ratione deserunt soluta doloremque aliquam, repellendus voluptates rerum in adipisci sapiente officiis nobis nam animi? Iste voluptates nemo sequi beatae sint debitis quod quidem sed soluta omnis mollitia fugit adipisci officiis accusantium temporibus, minima, repellat impedit. Inventore reiciendis iste, earum ratione molestiae explicabo saepe rem? Aperiam aut consectetur minus vero amet reprehenderit suscipit?'
     ];
 });
@@ -26,20 +27,13 @@ it('should return the correct component', function () {
 });
 
 // index page test
-it('passes posts to the view', function() {
+it('passes posts to the post index page', function() {
     $posts = Post::factory(3)->create();
 
     $posts->load(['user', 'topic']);
 
     get(route('posts.index'))
         ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
-});
-
-it('passes a topics to the view', function () {
-    $topics = Topic::factory(3)->create();
-
-    get(route('posts.index'))
-        ->assertHasResource('topics', TopicResource::collection($topics));
 });
 
 // show page test
@@ -57,7 +51,7 @@ it('pass comment to the view', function () {
     $post = Post::factory()->create();
     $comments = Comment::factory(2)->for($post)->create();
 
-    $comments->load(['user', 'topic']);
+    $comments->load('user');
     get($post->showRoute())
         ->assertHasPaginatedResource('comments', CommentResource::collection($comments->reverse()));
 });
@@ -69,27 +63,28 @@ it('required authentication to create a post', function() {
 it('store a post', function() {
     $user = User::factory()->create();
 
+    $data = value($this->validateData);
     actingAs($user)
-        ->post(route('posts.store'), $this->validateData);
+        ->post(route('posts.store'), $data);
 
     $this->assertDatabaseHas(Post::class, [
-        ...$this->validateData,
+        ...$data,
         'user_id' => $user->id
     ]);
 });
 
-it('redirect to the post page', function() {
+it('redirect to the post show page', function() {
     $user = User::factory()->create();
 
     actingAs($user)
-        ->post(route('posts.store'), $this->validateData)
+        ->post(route('posts.store'), value($this->validateData))
         ->assertRedirect(Post::latest('id')->first()->showRoute());
 });
 
 
 it('required a valid data when create post', function($data, array|string $error) {
     actingAs(User::factory()->create())
-        ->post(route('posts.store'), [...$this->validateData, ...$data])
+        ->post(route('posts.store'), [...value($this->validateData), ...$data])
         ->assertInvalid($error);
 })
 ->with([
@@ -99,6 +94,8 @@ it('required a valid data when create post', function($data, array|string $error
     [['title' => 1.5], 'title'],
     [['title' => str_repeat('a', 121)], 'title'],
     [['title' => str_repeat('a', 9)], 'title'],
+    [['topic_id' => null], 'topic_id'],
+    [['topic_id' => -1], 'topic_id'],
     [['body' => null], 'body'],
     [['body' => true], 'body'],
     [['body' => 1], 'body'],
@@ -117,6 +114,14 @@ it('returns the correct component', function() {
         ->assertComponent('Posts/Create');
 });
 
+
+it('passes a topics to the post index page', function () {
+    $topics = Topic::factory(3)->create();
+
+    get(route('posts.index'))
+        ->assertHasResource('topics', TopicResource::collection($topics));
+});
+
 it('can filter to a topic', function() {
     $general = Topic::factory()->create();
     $posts = Post::factory(3)->for($general)->create();
@@ -128,9 +133,17 @@ it('can filter to a topic', function() {
         ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
 });
 
-it('passes the selected topic to the view', function() {
+it('passes the selected topic to the post index page', function() {
     $topic = Topic::factory()->create();
 
     get(route('posts.index', ['topic' => $topic]))
         ->assertHasResource('selectedTopic', TopicResource::make($topic));
+});
+
+it('passes topics to the create post page', function () {
+    $topics = Topic::factory(2)->create();
+
+    actingAs(User::factory()->create())
+        ->get(route('posts.create'))
+        ->assertHasResource('topics', TopicResource::collection($topics));
 });
