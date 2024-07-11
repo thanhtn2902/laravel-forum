@@ -2,11 +2,20 @@
     <AppLayout>
         <Container>
             <div>
-                <Link :href="route('posts.index')" v-if="selectedTopic" class="text-indigo-400 hover:text-indigo-700 block mb-2 trigger-hover-transition">
-                    Back to All Posts
-                </Link>
                 <PageHeading v-text="selectedTopic ? selectedTopic.name : 'All Posts'"/>
                 <p v-if="selectedTopic" class="mt-1 text-gray-600 text-sm">{{ selectedTopic.description }}</p>
+                <menu class="flex space-x-2 mt-4 pb-3 pt-1 overflow-x-auto">
+                    <li>
+                        <Pill :href="route('posts.index')" :filled="!selectedTopic">
+                            All post
+                        </Pill>
+                    </li>
+                    <li v-for="topic in topics" :key="topic.id" >
+                        <Pill :href="route('posts.index', {'topic': topic.slug})" :filled="selectedTopic?.id === topic.id">
+                            {{ topic.name }}
+                        </Pill>
+                    </li>
+                </menu>
             </div>
             <ul class="divide-y space-y-2 mt-4">
                 <li v-for="post in posts.data" :key="post.id">
@@ -14,9 +23,9 @@
                         <span class="font-bold text-lg group-hover:text-indigo-500 trigger-hover-transition"> {{ post.title }} </span>
                         <span class="block mt-1 text-sm text-gray-600"> {{ formattedDate(post) }} ago by {{ post.user.name }}</span>
                     </Link>
-                    <Link :href="route('posts.index', {'topic': post.topic.slug})" class="rounded-full py-0.5 px-3 border border-pink-500 text-pink-500 hover:bg-indigo-400 hover:text-indigo-100 hover:border-indigo-100 trigger-hover-transition">
+                    <Pill :href="route('posts.index', {'topic': post.topic.slug})">
                         {{ post.topic.name }}
-                    </Link>
+                    </Pill>
                 </li>
             </ul>
             <Pagination :meta="posts.meta"/>
@@ -31,8 +40,9 @@ import Pagination from '@/Components/Pagination.vue';
 import { Link } from '@inertiajs/vue3';
 import { relativeDate } from '@/Utilities/Date.js';
 import PageHeading from '@/Components/PageHeading.vue';
+import Pill from '@/Components/Pill.vue';
 
-defineProps(['posts', 'selectedTopic']);
+defineProps(['posts', 'selectedTopic', 'topics']);
 
 const formattedDate = (post) => relativeDate(post.created_at)
 

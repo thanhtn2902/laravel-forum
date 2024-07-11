@@ -35,6 +35,13 @@ it('passes posts to the view', function() {
         ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
 });
 
+it('passes a topics to the view', function () {
+    $topics = Topic::factory(3)->create();
+
+    get(route('posts.index'))
+        ->assertHasResource('topics', TopicResource::collection($topics));
+});
+
 // show page test
 it('can show a post', function () {
     $post = Post::factory()->create();
