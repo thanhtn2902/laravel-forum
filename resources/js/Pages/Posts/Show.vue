@@ -117,9 +117,16 @@ const deleteComment = async (commentId) => {
         return
     }
 
-    router.delete(route('comments.destroy', { comment: commentId, page: props.comments.meta.current_page }), {
-        preserveScroll: true
-    })
+    router.delete(
+        route('comments.destroy', {
+            comment: commentId, page: props.comments.data.length > 1
+            ? props.comments.meta.current_page
+            : Math.max(props.comments.meta.current_page - 1, 1),
+        }),
+        {
+            preserveScroll: true
+        }
+    )
 }
 
 const submit = () => commentIdBeingEdited.value ? updateComment() : addComment()

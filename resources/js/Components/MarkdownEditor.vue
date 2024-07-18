@@ -121,14 +121,14 @@
 
 import {EditorContent, useEditor} from "@tiptap/vue-3"
 import { StarterKit } from "@tiptap/starter-kit"
-import { watch } from "vue";
+import { watch, onMounted } from "vue";
 import { Markdown } from "tiptap-markdown";
 import 'remixicon/fonts/remixicon.css'
 import { Link } from '@tiptap/extension-link'
 import Placeholder from "@tiptap/extension-placeholder";
 
+const model = defineModel()
 const props = defineProps({
-    modelValue: '',
     editorClass: {
         type: String,
         default: 'min-h-[512px]'
@@ -151,15 +151,13 @@ const editor = useEditor({
             placeholder: props.placeholder
         })
     ],
-    onUpdate: () => emit('update:modelValue', editor.value?.storage.markdown.getMarkdown()),
+    onUpdate: () => model.value =  editor.value?.storage.markdown.getMarkdown(),
     editorProps: {
         attributes: {
             class: `prose prose-sm max-w-none py-1.5 px-3 ${props.editorClass}`,
         },
     },
 })
-
-const emit = defineEmits(['update:modelValue'])
 
 const promptUserForHref = () => {
     if(editor.value?.isActive('link')) {
@@ -175,13 +173,15 @@ const promptUserForHref = () => {
 
 defineExpose({ focus: () => editor.value?.commands.focus()})
 
-watch(() => props.modelValue, (value) => {
-    if (value === editor.value?.storage.markdown.getMarkdown()) {
-        return
-    }
+onMounted(() => {
+    watch(model, (value) => {
+        if (value === editor.value?.storage.markdown.getMarkdown()) {
+            return
+        }
 
-    editor.value?.commands.setContent(value)
-}, { immediate: true })
+        editor.value?.commands.setContent(value)
+    }, { immediate: true })
+})
 
 </script>
 

@@ -25,10 +25,16 @@ it('can generate additional query parameter on the show route', function() {
         ->toBe(route('posts.show', [$this->initialPost, Str::slug($this->initialPost->title), 'page' => 2]));
 });
 
-it('will redirect if the slug is incorrect', function() {
-    get(route('posts.show', [$this->initialPost, 'foo-bar']))
+it('will redirect if the slug is incorrect', function(string $incorrectSlug) {
+
+    dd($this->initialPost);
+    get(route('posts.show', [$this->initialPost, $incorrectSlug]))
         ->assertRedirect($this->initialPost->showRoute());
-});
+})
+->with([
+    'foo-bar',
+    'hello'
+]);
 
 it('generate the html', function() {
     $post = Post::factory()->make(['body' => '## Hello World']);
