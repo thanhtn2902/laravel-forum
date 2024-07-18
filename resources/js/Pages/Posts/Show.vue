@@ -1,4 +1,8 @@
 <template>
+    <Head>
+        <link rel="canonical" :href="post.routes.show" />
+    </Head>
+
     <AppLayout>
         <Container>
             <PageHeading class="mb-2">{{ post.title }}</PageHeading>
@@ -6,7 +10,7 @@
                 {{ post.topic.name }}
             </Pill>
 
-            <span class="block mt-2 text-sm text-gray-600">{{ postedDate }} ago by {{ post.user.name }}</span>
+            <span class="block mt-2 text-sm text-gray-600">{{ postedDate }} by {{ post.user.name }}</span>
             <article class="mt-5 prose prose-sm max-w-none" v-html="post.html"></article>
 
             <div class="mt-12">
@@ -59,7 +63,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { computed, ref } from 'vue';
-import { useForm, router } from '@inertiajs/vue3';
+import { useForm, router, Head } from '@inertiajs/vue3';
 import { relativeDate } from '@/Utilities/Date.js'
 import { useConfirm } from '@/Utilities/Composables/useConfirm.js';
 import MarkdownEditor from '@/Components/MarkdownEditor.vue';

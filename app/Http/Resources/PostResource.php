@@ -20,8 +20,8 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'body'  => $this->body,
             'html'  => str($this->body)->markdown(),
-            'user' => $this->whenLoaded('user', fn() => UserResource::make($this->user)),
-            'topic' => $this->whenLoaded('topic', fn() => TopicResource::make($this->topic)),
+            'user' =>  UserResource::make($this->whenLoaded('user')),
+            'topic' =>  TopicResource::make($this->whenLoaded('topic')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'routes'    => [

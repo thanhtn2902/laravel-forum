@@ -21,7 +21,7 @@
                 <li v-for="post in posts.data" :key="post.id">
                     <Link :href="post.routes.show" class="block group px-2 py-4 ">
                         <span class="font-bold text-lg group-hover:text-indigo-500 trigger-hover-transition"> {{ post.title }} </span>
-                        <span class="block mt-1 text-sm text-gray-600"> {{ formattedDate(post) }} ago by {{ post.user.name }}</span>
+                        <span class="block mt-1 text-sm text-gray-600"> {{ formattedDate(post) }} by {{ post.user.name }}</span>
                     </Link>
                     <Pill :href="route('posts.index', {'topic': post.topic.slug})">
                         {{ post.topic.name }}
