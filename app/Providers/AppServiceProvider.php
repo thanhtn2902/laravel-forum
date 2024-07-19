@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -32,7 +33,8 @@ class AppServiceProvider extends ServiceProvider
 
         Relation::enforceMorphMap([
             'post' => Post::class,
-            'comment' => Comment::class
+            'comment' => Comment::class,
+            'user' => User::class
         ]);
     }
 }

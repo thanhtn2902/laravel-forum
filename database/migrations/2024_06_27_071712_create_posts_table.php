@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('body');
             $table->longText('html');
+            $table->unsignedBigInteger('likes_count')->default(0);
             $table->timestamps();
         });
     }

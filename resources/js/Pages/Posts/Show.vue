@@ -11,6 +11,10 @@
             </Pill>
 
             <span class="block mt-2 text-sm text-gray-600">{{ postedDate }} by {{ post.user.name }}</span>
+            <div class="mt-3">
+                <span class="text-pink-500 font-bold">{{ post.likes_count }} likes</span>
+            </div>
+
             <article class="mt-5 prose prose-sm max-w-none" v-html="post.html"></article>
 
             <div class="mt-12">

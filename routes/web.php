@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,8 @@ Route::middleware([
 
     Route::resource('posts', PostController::class)->only(['create', 'store']);
     Route::resource('posts.comments', CommentController::class)->shallow()->only(['store', 'update', 'destroy']);
+
+    Route::post('/likes/{type}/{id}', [LikeController::class, 'store'])->name('likes.store');
 });
 
 Route::get('posts/{post}/{slug}', [PostController::class, 'show'])->name('posts.show');

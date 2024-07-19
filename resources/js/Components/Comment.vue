@@ -5,7 +5,10 @@
         </div>
         <div class="flex-1">
             <div class="mt-1 prose prose-sm max-w-none" v-html="comment.html"></div>
-            <span class="first-letter:uppercase block pt-1 text-xs text-gray-600">By {{ comment.user.name }} {{ relativeDate(comment.created_at) }}</span>
+            <span class="first-letter:uppercase block pt-1 text-xs text-gray-600">
+                By {{ comment.user.name }} {{ relativeDate(comment.created_at) }} |
+                <span class="mx-1 text-pink-500 font-bold">{{ comment.likes_count }} Likes</span>
+            </span>
             <div class="mt-2 flex justify-end space-x-3 empty:hidden">
                 <form @submit.prevent="$emit('edit', comment.id)" v-if="comment.can?.update">
                     <button type="submit" class="font-mono text-xs hover:font-semibold">Edit</button>

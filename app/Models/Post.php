@@ -15,7 +15,6 @@ class Post extends Model
 {
     use HasFactory;
     use ConvertMarkdownToHtml;
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
