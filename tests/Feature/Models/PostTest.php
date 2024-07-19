@@ -26,8 +26,6 @@ it('can generate additional query parameter on the show route', function() {
 });
 
 it('will redirect if the slug is incorrect', function(string $incorrectSlug) {
-
-    dd($this->initialPost);
     get(route('posts.show', [$this->initialPost, $incorrectSlug]))
         ->assertRedirect($this->initialPost->showRoute());
 })

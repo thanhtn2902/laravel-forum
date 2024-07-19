@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Comment;
