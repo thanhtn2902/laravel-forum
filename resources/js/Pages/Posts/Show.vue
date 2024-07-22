@@ -13,6 +13,17 @@
             <span class="block mt-2 text-sm text-gray-600">{{ postedDate }} by {{ post.user.name }}</span>
             <div class="mt-3">
                 <span class="text-pink-500 font-bold">{{ post.likes_count }} likes</span>
+
+                <div class="mt-2" v-if="$page.props.auth.user">
+                    <Link v-if="post.can.like" :href="route('likes.store', ['post', post.id])" method="post" class="inline-block bg-indigo-600 hover:bg-pink-500 transition-colors text-white py-1.5 px-3 rounded-lg">
+                        <HandThumbUpIcon class="size-4 inline-block mr-2" />
+                        Like Post
+                    </Link>
+                    <Link v-else :href="route('likes.destroy', ['post', post.id])" method="delete" class="inline-block bg-indigo-600 hover:bg-pink-500 transition-colors text-white py-1.5 px-3 rounded-lg">
+                        <HandThumbDownIcon class="size-4 inline-block mr-2" />
+                        Unlike Post
+                    </Link>
+                </div>
             </div>
 
             <article class="mt-5 prose prose-sm max-w-none" v-html="post.html"></article>
@@ -67,12 +78,13 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { computed, ref } from 'vue';
-import { useForm, router, Head } from '@inertiajs/vue3';
+import { useForm, router, Head, Link } from '@inertiajs/vue3';
 import { relativeDate } from '@/Utilities/Date.js'
 import { useConfirm } from '@/Utilities/Composables/useConfirm.js';
 import MarkdownEditor from '@/Components/MarkdownEditor.vue';
 import PageHeading from '@/Components/PageHeading.vue';
 import Pill from '@/Components/Pill.vue';
+import { HandThumbUpIcon, HandThumbDownIcon } from '@heroicons/vue/20/solid/index'
 
 const props = defineProps(['post', 'comments'])
 

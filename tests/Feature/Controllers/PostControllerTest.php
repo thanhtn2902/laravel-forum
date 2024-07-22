@@ -44,7 +44,7 @@ it('can show a post', function () {
 
     get($post->showRoute())
         ->assertComponent('Posts/Show')
-        ->assertHasResource('post', PostResource::make($post));
+        ->assertHasResource('post', PostResource::make($post)->withLikePermission());
 });
 
 it('pass comment to the view', function () {
@@ -52,8 +52,11 @@ it('pass comment to the view', function () {
     $comments = Comment::factory(2)->for($post)->create();
 
     $comments->load('user');
+
+    $expectedResource = CommentResource::collection($comments->reverse());
+    $expectedResource->collection->transform(fn ($resource) => $resource->withLikePermission());
     get($post->showRoute())
-        ->assertHasPaginatedResource('comments', CommentResource::collection($comments->reverse()));
+        ->assertHasPaginatedResource('comments', $expectedResource);
 });
 
 it('required authentication to create a post', function() {
