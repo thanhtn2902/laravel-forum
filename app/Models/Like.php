@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\LikeCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Like extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['user_id'];
+
+    protected $dispatchesEvents = [
+        'created' => LikeCreated::class,
+    ];
 
     public function user(): BelongsTo
     {
