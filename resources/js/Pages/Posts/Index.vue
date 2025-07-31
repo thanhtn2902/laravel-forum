@@ -22,13 +22,13 @@
                         <InputLabel for="query">Search</InputLabel>
                         <div class="flex space-x-2 mt-1 ">
                             <TextInput class="w-full" id="query" v-model="searchForm.query" />
-                            <SecondaryButton type="submit">Search</SecondaryButton>
-                            <DangerButton v-if="searchForm.query" @click="clearSearch">Clear</DangerButton>
+                            <SecondaryButton :disabled="searchForm.processing" type="submit" >Search</SecondaryButton>
+                            <DangerButton :disabled="searchForm.processing" v-if="searchForm.query" @click="clearSearch">Clear</DangerButton>
                         </div>
                     </div>
                 </form>
             </div>
-            <ul class="divide-y space-y-2 mt-4">
+            <ul class="divide-y space-y-2 mt-4 mb-2">
                 <li v-for="post in posts.data" :key="post.id">
                     <Link :href="post.routes.show" class="block group px-2 py-4 ">
                         <span class="font-bold text-lg group-hover:text-indigo-500 trigger-hover-transition"> {{ post.title }} </span>

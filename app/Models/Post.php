@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\ConvertMarkdownToHtml;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
     use HasFactory;
     use ConvertMarkdownToHtml;
+    use Searchable;
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
