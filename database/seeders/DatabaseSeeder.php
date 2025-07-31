@@ -3,6 +3,12 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Comment;
+use App\Models\Like;
+use App\Models\Post;
+use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +18,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $this->call(TopicSeeder::class);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $topics = Topic::all();
+
+        $users = User::factory(10)->create();
+
+        $posts = Post::factory(200)
+            ->withFixtures()
+            ->has(Comment::factory(15)->recycle($users))
+            ->recycle([$users, $topics])
+            ->create();
+
+        User::factory()
+            ->has(Post::factory(45)->recycle($topics)->withFixtures())
+            ->has(Comment::factory(120)->recycle($posts))
+            ->has(Like::factory()->forEachSequence(
+                ...$posts->random(100)->map(fn (Post $post) => ['likeable_id' => $post])
+            ))
+            ->create([
+                'name'  => 'Nathan Truong',
+                'email' => 'nathan@example.com',
+            ]);
     }
 }

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "isolatedModules": true,
+        "strict": true,
+        "allowJs": true,
+        "jsx": "preserve",
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./resources/js/*"]
+        }
+    },
+    "include": ["./resources/js/**/*", "./resources/js/**/*.vue"]
+}
