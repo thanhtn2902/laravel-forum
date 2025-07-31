@@ -23,16 +23,14 @@ class PostController extends Controller
      */
     public function index(Request $request, ?Topic $topic = null)
     {
-        if($request->query('query')) {
-            $posts = Post::search($request->query('query'))
+        $posts = $request->query('query')
+            ? Post::search($request->query('query'))
                 ->query(fn (Builder $query) => $query->with(['user', 'topic']))
-                ->when($topic, fn (ScoutBuilder $query) => $query->where('topic_id', $topic->id));
-        } else {
-            $posts = Post::with(['user', 'topic'])
+                ->when($topic, fn (ScoutBuilder $query) => $query->where('topic_id', $topic->id))
+            : Post::with(['user', 'topic'])
                 ->when($topic, fn (Builder $builder) => $builder->whereBelongsTo($topic))
                 ->latest()
                 ->latest('id');
-        }
 
         return inertia('Posts/Index', [
             'posts' => PostResource::collection($posts->paginate()->withQueryString()),
