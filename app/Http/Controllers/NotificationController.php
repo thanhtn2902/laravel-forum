@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\NotificationResource;
 use App\Events\NotificationMarkedAsRead;
-use App\Events\AllNotificationsMarkedAsRead;
 
 class NotificationController extends Controller
 {
@@ -21,59 +20,43 @@ class NotificationController extends Controller
 
         return inertia('Notifications/Index', [
             'notifications' => NotificationResource::collection($notifications),
-            'unreadCount' => $request->user()->unreadNotifications()->count()
         ]);
     }
 
     /**
-     * Mark a notification as read.
+     * Mark notification(s) as read.
+     * If notificationId is 'all', marks all notifications as read.
+     * Otherwise, marks the specific notification as read.
      */
-    public function markAsRead(Request $request, string $notificationId)
+    public function markAsRead(Request $request)
     {
-        $notification = $request->user()
-            ->notifications()
-            ->where('id', $notificationId)
-            ->first();
+        $user = $request->user();
+        $notificationId = $request->input('notification_id');
 
-        if ($notification) {
-            $notification->markAsRead();
+        if ($request->input('mark_all') === false && $request->has('notification_id')) {
+                // Mark specific notification as read
+            $notification = $user->notifications()
+                ->where('id', $notificationId)
+                ->first();
 
-            // Get the new unread count
-            $newUnreadCount = $request->user()->unreadNotifications()->count();
+            if ($notification) {
+                $notification->markAsRead();
 
-            // Broadcast the update
-            broadcast(new NotificationMarkedAsRead($request->user(), $notificationId, $newUnreadCount));
+                // Broadcast the update for specific notification
+                broadcast(new NotificationMarkedAsRead($user, $notificationId));
+            }
+
         }
 
-        return response()->json(['success' => true]);
-    }
+        if($request->input('mark_all') === true) {
+            // Mark all unread notifications as read
+            $user->unreadNotifications->markAsRead();
 
-    /**
-     * Mark all notifications as read.
-     */
-    public function markAllAsRead(Request $request)
-    {
-        $request->user()
-            ->unreadNotifications
-            ->markAsRead();
+             // Broadcast the update for all notifications (null means all)
+            broadcast(new NotificationMarkedAsRead($user, null));
+        }
 
-        // Broadcast the update
-        broadcast(new AllNotificationsMarkedAsRead($request->user()));
-
-        return response()->json(['success' => true]);
-    }
-
-    /**
-     * Get unread notifications count.
-     */
-    public function unreadCount(Request $request)
-    {
-        return response()->json([
-            'count' => $request->user()->unreadNotifications()->count()
-        ]);
-    }
-
-    /**
+    }    /**
      * Get notifications list for API (dropdown/ajax requests)
      */
     public function list(Request $request)
@@ -85,7 +68,8 @@ class NotificationController extends Controller
             ->get();
 
         return response()->json([
-            'notifications' => NotificationResource::collection($notifications)
+            'notifications' => NotificationResource::collection($notifications),
+            'unreadCount' => $request->user()->unreadNotifications()->count()
         ]);
     }
 }

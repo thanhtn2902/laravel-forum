@@ -5,24 +5,31 @@
 
             <div class="flex justify-between items-center mb-6">
                 <p class="text-gray-600">
-                    {{ notifications.total }} notification(s)
+                    {{ notifications.meta.total }} notification(s)
                 </p>
                 <button
-                    v-if="unreadCount > 0"
+                    v-if="notificationStore.unreadCount > 0"
                     @click="markAllAsRead"
-                    class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    :disabled="submitting"
                 >
-                    Mark all as read
+                   Mark all as read
                 </button>
             </div>
 
-            <div v-if="notificationsData.length === 0" class="text-center py-12">
+            <div v-if="notificationStore.notifications.length === 0 && !notificationStore.isLoading" class="text-center py-12">
                 <p class="text-gray-500">No notifications yet.</p>
+            </div>
+
+            <!-- Loading state -->
+            <div v-if="notificationStore.isLoading" class="text-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="mt-2 text-gray-500">Loading notifications...</p>
             </div>
 
             <div v-else class="space-y-4">
                 <div
-                    v-for="notification in notificationsData"
+                    v-for="notification in notificationStore.notifications"
                     :key="notification.id"
                     class="bg-white border rounded-lg p-4 hover:bg-gray-50 transition-colors"
                     :class="{ 'border-l-4 border-l-blue-500': !notification.read_at }"
@@ -46,13 +53,9 @@
                             </div>
 
                             <div class="mt-2">
-                                <Link
-                                    :href="notification.data.likeable_url"
-                                    class="text-sm text-blue-600 hover:text-blue-800"
-                                    @click="markAsRead(notification.id)"
-                                >
+                                <span class="text-sm font-medium text-blue-700 leading-relaxed">
                                     {{ notification.data.likeable_title }}
-                                </Link>
+                                </span>
                             </div>
                         </div>
 
@@ -84,77 +87,48 @@ import Container from '@/Components/Container.vue'
 import PageHeading from '@/Components/PageHeading.vue'
 import Pagination from '@/Components/Pagination.vue'
 import { HandThumbUpIcon } from '@heroicons/vue/20/solid'
-import { Link, router } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 import { relativeDate } from '@/Utilities/Date.js'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import axios from 'axios'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useNotifications } from '@/composables/useNotifications'
 
 const props = defineProps(['notifications'])
+const user = usePage().props.auth.user
 
-// Make notifications reactive for real-time updates
-const notificationsData = ref([...props.notifications.data])
+const submitting = ref(false)
 
-const unreadCount = computed(() => {
-    return notificationsData.value.filter(n => !n.read_at).length
-})
+// Use the notification store
+const notificationStore = useNotifications()
 
-const markAsRead = async (notificationId) => {
-    try {
-        await axios.patch(route('api.notifications.read', notificationId))
-        // Real-time update will be handled by Echo event listener
-    } catch (error) {
-        console.error('Failed to mark notification as read:', error)
+// Initialize with server-side data if available
+onMounted(async () => {
+    // Initialize the store with server-side data
+    if (props.notifications?.data) {
+        notificationStore.notifications = props.notifications.data
     }
-}
 
-const markAllAsRead = async () => {
-    try {
-        await axios.patch(route('api.notifications.mark-all-read'))
-        // Real-time update will be handled by Echo event listener
-    } catch (error) {
-        console.error('Failed to mark all notifications as read:', error)
-    }
-}
+    // Also fetch fresh data to ensure we have the latest
+    await notificationStore.fetchNotifications()
 
-// Set up real-time notifications
-onMounted(() => {
-    const userId = document.head.querySelector('meta[name="user-id"]')?.getAttribute('content')
-
-    if (userId && window.Echo) {
-        const channel = window.Echo.private(`App.Models.User.${userId}`)
+    if (user?.id && window.Echo) {
+        const channel = window.Echo.private(`App.Models.User.${user.id}`)
 
         // Listen for new notifications
         channel.notification((notification) => {
-            console.log('New notification received via Reverb:', notification)
-            // Add new notification to the list (at the beginning)
-            notificationsData.value.unshift(notification)
+            console.log('New notification received:', notification)
+            // Add the new notification to the beginning of the array
+            notificationStore.notifications.unshift(notification)
         })
 
-        // Listen for notification marked as read
+        // Listen for notification marked as read (handles both single and all cases)
         channel.listen('.notification.marked-as-read', (data) => {
-            console.log('Notification marked as read:', data)
-
-            // Update the notification in the list
-            const notification = notificationsData.value.find(n => n.id === data.notification_id)
-            if (notification && !notification.read_at) {
-                notification.read_at = new Date().toISOString()
+            if (data.notification_id === null) {
+                // Mark all notifications as read
+                notificationStore.markAllNotificationsAsRead()
+            } else {
+                // Mark specific notification as read
+                notificationStore.markNotificationAsRead(data.notification_id)
             }
-        })
-
-        // Listen for all notifications marked as read
-        channel.listen('.notifications.all-marked-as-read', (data) => {
-            console.log('All notifications marked as read:', data)
-
-            // Mark all notifications as read in the local state
-            notificationsData.value.forEach(notification => {
-                if (!notification.read_at) {
-                    notification.read_at = new Date().toISOString()
-                }
-            })
-        })
-
-        channel.error((error) => {
-            console.error('Echo connection error:', error)
         })
     } else {
         console.warn('Echo not available or user not authenticated')
@@ -163,9 +137,29 @@ onMounted(() => {
 
 onUnmounted(() => {
     // Clean up Echo subscription
-    const userId = document.head.querySelector('meta[name="user-id"]')?.getAttribute('content')
-    if (userId && window.Echo) {
-        window.Echo.leave(`App.Models.User.${userId}`)
+    if (user?.id && window.Echo) {
+        window.Echo.leave(`App.Models.User.${user.id}`)
     }
 })
+
+const markAsRead = async (notificationId) => {
+    try {
+        await notificationStore.markedNotification(notificationId)
+    } catch (error) {
+        console.error('Failed to mark notification as read:', error)
+    }
+}
+
+const markAllAsRead = async () => {
+    if (submitting.value) return // Prevent multiple calls
+
+    submitting.value = true
+    try {
+        await notificationStore.markedNotification()
+    } catch (error) {
+        console.error('Failed to mark all notifications as read:', error)
+    } finally {
+        submitting.value = false
+    }
+}
 </script>

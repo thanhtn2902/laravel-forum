@@ -17,16 +17,14 @@ class NotificationMarkedAsRead implements ShouldBroadcast
 
     public $user;
     public $notificationId;
-    public $newUnreadCount;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, string $notificationId, int $newUnreadCount)
+    public function __construct(User $user, ?string $notificationId)
     {
         $this->user = $user;
         $this->notificationId = $notificationId;
-        $this->newUnreadCount = $newUnreadCount;
     }
 
     /**
@@ -56,7 +54,6 @@ class NotificationMarkedAsRead implements ShouldBroadcast
     {
         return [
             'notification_id' => $this->notificationId,
-            'new_unread_count' => $this->newUnreadCount,
         ];
     }
 }

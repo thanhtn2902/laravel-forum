@@ -9,20 +9,17 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
-class AllNotificationsMarkedAsRead implements ShouldBroadcast
+class AllNotificationsMarkedAsRead
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $user;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->user = $user;
+        //
     }
 
     /**
@@ -33,25 +30,7 @@ class AllNotificationsMarkedAsRead implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('App.Models.User.' . $this->user->id),
-        ];
-    }
-
-    /**
-     * The event's broadcast name.
-     */
-    public function broadcastAs(): string
-    {
-        return 'notifications.all-marked-as-read';
-    }
-
-    /**
-     * Get the data to broadcast.
-     */
-    public function broadcastWith(): array
-    {
-        return [
-            'new_unread_count' => 0,
+            new PrivateChannel('channel-name'),
         ];
     }
 }

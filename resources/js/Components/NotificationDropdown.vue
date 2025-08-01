@@ -7,10 +7,10 @@
         >
             <BellIcon class="h-6 w-6" />
             <span
-                v-if="unreadCount > 0"
+                v-if="notificationStore.unreadCount > 0"
                 class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full min-w-[1.25rem] h-5"
             >
-                {{ unreadCount > 99 ? '99+' : unreadCount }}
+                {{ notificationStore.unreadCount >= 10 ? '10+' : notificationStore.unreadCount }}
             </span>
         </button>
 
@@ -33,15 +33,21 @@
             </div>
 
             <!-- Notifications List -->
-            <div class="max-h-96 overflow-y-auto">
-                <div v-if="notifications.length === 0" class="px-4 py-8 text-center">
+            <div class="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                <div v-if="notificationStore.recentNotifications.length === 0 && !notificationStore.isLoading" class="px-4 py-8 text-center">
                     <BellIcon class="mx-auto h-8 w-8 text-gray-400" />
                     <p class="mt-2 text-sm text-gray-500">No new notifications</p>
                 </div>
 
+                <!-- Loading state -->
+                <div v-if="notificationStore.isLoading" class="px-4 py-8 text-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                    <p class="mt-2 text-sm text-gray-500">Loading notifications...</p>
+                </div>
+
                 <div v-else>
                     <div
-                        v-for="notification in notifications.slice(0, 5)"
+                        v-for="notification in notificationStore.recentNotifications"
                         :key="notification.id"
                         class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 cursor-pointer"
                         :class="{ 'bg-blue-50': !notification.read_at }"
@@ -73,13 +79,13 @@
             </div>
 
             <!-- Footer -->
-            <div v-if="unreadCount > 0" class="px-4 py-3 border-t border-gray-200">
+            <div v-if="notificationStore.unreadCount > 0" class="px-4 py-3 border-t border-gray-200">
                 <button
                     @click="markAllAsRead"
                     class="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
-                    :disabled="markingAllAsRead"
+                    :disabled="submitting"
                 >
-                    {{ markingAllAsRead ? 'Marking...' : 'Mark all as read' }}
+                    Mark all as read
                 </button>
             </div>
         </div>
@@ -95,75 +101,48 @@
 
 <script setup>
 import { BellIcon, HandThumbUpIcon } from '@heroicons/vue/24/outline'
-import { Link, router } from '@inertiajs/vue3'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { relativeDate } from '@/Utilities/Date.js'
-import axios from 'axios'
+import { useNotifications } from '@/composables/useNotifications'
 
 const isOpen = ref(false)
-const notifications = ref([])
-const unreadCount = ref(0)
-const markingAllAsRead = ref(false)
+const submitting = ref(false)
+const user = usePage().props.auth.user
 
-// Computed
-const hasUnreadNotifications = computed(() => unreadCount.value > 0)
+// Use the notification store
+const notificationStore = useNotifications()
 
 // Methods
 const toggleDropdown = () => {
     isOpen.value = !isOpen.value
-    if (isOpen.value) {
-        fetchNotifications()
-    }
 }
 
 const closeDropdown = () => {
     isOpen.value = false
 }
 
-const fetchNotifications = async () => {
-    try {``
-        const response = await axios.get(route('api.notifications.list'))
-        console.log(response)
-        notifications.value = response.data.notifications || []
-    } catch (error) {
-        console.error('Failed to fetch notifications:', error)
-    }
-}
-
-const fetchUnreadCount = async () => {
-    try {
-        const response = await axios.get(route('api.notifications.unread-count'))
-        unreadCount.value = response.data.count
-    } catch (error) {
-        console.error('Failed to fetch unread count:', error)
-    }
-}
-
-const markAsRead = async (notificationId) => {
-    try {
-        await axios.patch(route('api.notifications.read', notificationId))
-        // Real-time update will be handled by Echo event listener
-    } catch (error) {
-        console.error('Failed to mark notification as read:', error)
-    }
-}
-
 const markAllAsRead = async () => {
-    markingAllAsRead.value = true
+    if (submitting.value) return // Prevent multiple calls
+
+    submitting.value = true
     try {
-        await axios.patch(route('api.notifications.mark-all-read'))
-        // Real-time update will be handled by Echo event listener
+        await notificationStore.markedNotification()
     } catch (error) {
         console.error('Failed to mark all notifications as read:', error)
     } finally {
-        markingAllAsRead.value = false
+        submitting.value = false
+        closeDropdown()
     }
 }
 
 const handleNotificationClick = async (notification) => {
-    await markAsRead(notification.id)
-    closeDropdown()
-    // router.visit(notification.data.likeable_url)
+    try {
+        await notificationStore.markedNotification(notification.id)
+        closeDropdown()
+    } catch (error) {
+        console.error('Failed to mark notification as read:', error)
+    }
 }
 
 // Handle click outside
@@ -175,63 +154,29 @@ const handleClickOutside = (event) => {
 
 // Lifecycle
 onMounted(() => {
-    // Fetch initial unread count when component mounts
-    fetchUnreadCount()
-
     document.addEventListener('click', handleClickOutside)
 
-    // Set up real-time notifications with Laravel Echo (Reverb)
-    const userId = document.head.querySelector('meta[name="user-id"]')?.getAttribute('content')
-
-    if (userId && window.Echo) {
-        const channel = window.Echo.private(`App.Models.User.${userId}`)
+    if (user?.id && window.Echo) {
+        const channel = window.Echo.private(`App.Models.User.${user.id}`)
 
         // Listen for new notifications
         channel.notification((notification) => {
-            console.log('New notification received via Reverb:', notification)
-
-            // Add new notification to the list (at the beginning)
-            notifications.value.unshift(notification)
-
-            // Update unread count
-            unreadCount.value++
-
-            // Optional: You can add a toast notification here
-            // showToast(`New notification: ${notification.message}`)
+            console.log('heyy')
+            // Refetch notifications to ensure consistency
+            notificationStore.fetchNotifications()
         })
 
-        // Listen for notification marked as read
+        // Listen for notification marked as read (handles both single and all cases)
         channel.listen('.notification.marked-as-read', (data) => {
-            console.log('Notification marked as read:', data)
-
-            // Update the notification in the list
-            const notificationIndex = notifications.value.findIndex(n => n.id === data.notification_id)
-            if (notificationIndex !== -1) {
-                notifications.value[notificationIndex].read_at = new Date().toISOString()
+            if (data.notification_id === null) {
+                // Mark all notifications as read (use state mutation, not API call)
+                notificationStore.markAllNotificationsAsRead()
+            } else {
+                // Mark specific notification as read (use state mutation, not API call)
+                notificationStore.markNotificationAsRead(data.notification_id)
             }
-
-            // Update unread count
-            unreadCount.value = data.new_unread_count
         })
 
-        // Listen for all notifications marked as read
-        channel.listen('.notifications.all-marked-as-read', (data) => {
-            console.log('All notifications marked as read:', data)
-
-            // Mark all notifications as read in the local state
-            notifications.value.forEach(notification => {
-                if (!notification.read_at) {
-                    notification.read_at = new Date().toISOString()
-                }
-            })
-
-            // Update unread count
-            unreadCount.value = data.new_unread_count
-        })
-
-        channel.error((error) => {
-            console.error('Echo connection error:', error)
-        })
     } else {
         console.warn('Echo not available or user not authenticated')
     }
@@ -239,11 +184,9 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
-
     // Clean up Echo subscription
-    const userId = document.head.querySelector('meta[name="user-id"]')?.getAttribute('content')
-    if (userId && window.Echo) {
-        window.Echo.leave(`App.Models.User.${userId}`)
+    if (user?.id && window.Echo) {
+        window.Echo.leave(`App.Models.User.${user.id}`)
     }
 })
 </script>
