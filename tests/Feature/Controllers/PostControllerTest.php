@@ -1,23 +1,22 @@
 <?php
 
-use App\Models\Post;
-use App\Models\User;
-use App\Models\Topic;
-
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\TopicResource;
 use App\Models\Comment;
+use App\Models\Post;
+use App\Models\Topic;
+use App\Models\User;
+
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
-use function Pest\Laravel\actingAs;
-use App\Http\Resources\PostResource;
-use App\Http\Resources\CommentResource;
-use App\Http\Resources\TopicResource;
-
-beforeEach(function() {
-    $this->validateData = fn() => [
-        'title' => 'Hello World',
+beforeEach(function () {
+    $this->validateData = fn () => [
+        'title'    => 'Hello World',
         'topic_id' => Topic::factory()->create()->getKey(),
-        'body' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem doloremque inventore nesciunt, vero accusantium illum hic sequi deserunt rerum aliquid, numquam, nam quis. Fuga cumque, similique, perferendis esse quibusdam saepe neque, sint nobis voluptate veritatis nostrum optio ipsam minus rem totam delectus animi excepturi dolor repudiandae! Illum ratione deserunt soluta doloremque aliquam, repellendus voluptates rerum in adipisci sapiente officiis nobis nam animi? Iste voluptates nemo sequi beatae sint debitis quod quidem sed soluta omnis mollitia fugit adipisci officiis accusantium temporibus, minima, repellat impedit. Inventore reiciendis iste, earum ratione molestiae explicabo saepe rem? Aperiam aut consectetur minus vero amet reprehenderit suscipit?'
+        'body'     => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem doloremque inventore nesciunt, vero accusantium illum hic sequi deserunt rerum aliquid, numquam, nam quis. Fuga cumque, similique, perferendis esse quibusdam saepe neque, sint nobis voluptate veritatis nostrum optio ipsam minus rem totam delectus animi excepturi dolor repudiandae! Illum ratione deserunt soluta doloremque aliquam, repellendus voluptates rerum in adipisci sapiente officiis nobis nam animi? Iste voluptates nemo sequi beatae sint debitis quod quidem sed soluta omnis mollitia fugit adipisci officiis accusantium temporibus, minima, repellat impedit. Inventore reiciendis iste, earum ratione molestiae explicabo saepe rem? Aperiam aut consectetur minus vero amet reprehenderit suscipit?',
     ];
 });
 
@@ -27,7 +26,7 @@ it('should return the correct component', function () {
 });
 
 // index page test
-it('passes posts to the post index page', function() {
+it('passes posts to the post index page', function () {
     $posts = Post::factory(3)->create();
 
     $posts->load(['user', 'topic']);
@@ -59,11 +58,11 @@ it('pass comment to the view', function () {
         ->assertHasPaginatedResource('comments', $expectedResource);
 });
 
-it('required authentication to create a post', function() {
+it('required authentication to create a post', function () {
     post(route('posts.store'))->assertRedirect(route('login'));
 });
 
-it('store a post', function() {
+it('store a post', function () {
     $user = User::factory()->create();
 
     $data = value($this->validateData);
@@ -72,11 +71,11 @@ it('store a post', function() {
 
     $this->assertDatabaseHas(Post::class, [
         ...$data,
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 });
 
-it('redirect to the post show page', function() {
+it('redirect to the post show page', function () {
     $user = User::factory()->create();
 
     actingAs($user)
@@ -84,39 +83,37 @@ it('redirect to the post show page', function() {
         ->assertRedirect(Post::latest('id')->first()->showRoute());
 });
 
-
-it('required a valid data when create post', function($data, array|string $error) {
+it('required a valid data when create post', function ($data, array|string $error) {
     actingAs(User::factory()->create())
         ->post(route('posts.store'), [...value($this->validateData), ...$data])
         ->assertInvalid($error);
 })
-->with([
-    [['title' => null], 'title'],
-    [['title' => true], 'title'],
-    [['title' => 1], 'title'],
-    [['title' => 1.5], 'title'],
-    [['title' => str_repeat('a', 121)], 'title'],
-    [['title' => str_repeat('a', 9)], 'title'],
-    [['topic_id' => null], 'topic_id'],
-    [['topic_id' => -1], 'topic_id'],
-    [['body' => null], 'body'],
-    [['body' => true], 'body'],
-    [['body' => 1], 'body'],
-    [['body' => 1.5], 'body'],
-    [['body' => str_repeat('a', 10001)], 'body'],
-    [['body' => str_repeat('a', 99)], 'body'],
-]);
+    ->with([
+        [['title' => null], 'title'],
+        [['title' => true], 'title'],
+        [['title' => 1], 'title'],
+        [['title' => 1.5], 'title'],
+        [['title' => str_repeat('a', 121)], 'title'],
+        [['title' => str_repeat('a', 9)], 'title'],
+        [['topic_id' => null], 'topic_id'],
+        [['topic_id' => -1], 'topic_id'],
+        [['body' => null], 'body'],
+        [['body' => true], 'body'],
+        [['body' => 1], 'body'],
+        [['body' => 1.5], 'body'],
+        [['body' => str_repeat('a', 10001)], 'body'],
+        [['body' => str_repeat('a', 99)], 'body'],
+    ]);
 
-it('required authentication to access create post page', function() {
+it('required authentication to access create post page', function () {
     get(route('posts.create'))->assertRedirect(route('login'));
 });
 
-it('returns the correct component', function() {
+it('returns the correct component', function () {
     actingAs(User::factory()->create())
         ->get(route('posts.create'))
         ->assertComponent('Posts/Create');
 });
-
 
 it('passes a topics to the post index page', function () {
     $topics = Topic::factory(3)->create();
@@ -125,7 +122,7 @@ it('passes a topics to the post index page', function () {
         ->assertHasResource('topics', TopicResource::collection($topics));
 });
 
-it('can filter to a topic', function() {
+it('can filter to a topic', function () {
     $general = Topic::factory()->create();
     $posts = Post::factory(3)->for($general)->create();
     $otherPosts = Post::factory(3)->create();
@@ -136,7 +133,7 @@ it('can filter to a topic', function() {
         ->assertHasPaginatedResource('posts', PostResource::collection($posts->reverse()));
 });
 
-it('passes the selected topic to the post index page', function() {
+it('passes the selected topic to the post index page', function () {
     $topic = Topic::factory()->create();
 
     get(route('posts.index', ['topic' => $topic]))

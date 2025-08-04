@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Testing\TestResponse;
-use Inertia\Testing\AssertableInertia;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Testing\TestResponse;
+use Inertia\Testing\AssertableInertia;
 
 class TestingServiceProvider extends ServiceProvider
 {
@@ -23,11 +23,11 @@ class TestingServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if(!$this->app->runningUnitTests()) {
+        if (!$this->app->runningUnitTests()) {
             return;
         }
 
-        AssertableInertia::macro('hasResource', function(string $key, JsonResource $jsonResource) {
+        AssertableInertia::macro('hasResource', function (string $key, JsonResource $jsonResource) {
             /**
              * @var AssertableInertia $this
              */
@@ -38,8 +38,8 @@ class TestingServiceProvider extends ServiceProvider
             return $this;
         });
 
-        AssertableInertia::macro('hasPaginatedResource', function(string $key, ResourceCollection $jsonResource) {
-             /**
+        AssertableInertia::macro('hasPaginatedResource', function (string $key, ResourceCollection $jsonResource) {
+            /**
              * @var AssertableInertia $this
              */
             $this->hasResource("{$key}.data", $jsonResource);
@@ -49,21 +49,21 @@ class TestingServiceProvider extends ServiceProvider
             return $this;
         });
 
-        TestResponse::macro('assertHasResource', function(string $key, JsonResource $jsonResource) {
+        TestResponse::macro('assertHasResource', function (string $key, JsonResource $jsonResource) {
             /**
              * @var AssertableInertia $this
              */
             return $this->assertInertia(fn (AssertableInertia $assertableInertia) => $assertableInertia->hasResource($key, $jsonResource));
         });
 
-        TestResponse::macro('assertHasPaginatedResource', function(string $key, ResourceCollection $jsonResource) {
+        TestResponse::macro('assertHasPaginatedResource', function (string $key, ResourceCollection $jsonResource) {
             /**
              * @var AssertableInertia $this
              */
             return $this->assertInertia(fn (AssertableInertia $assertableInertia) => $assertableInertia->hasPaginatedResource($key, $jsonResource));
         });
 
-        TestResponse::macro('assertComponent', function(string $component) {
+        TestResponse::macro('assertComponent', function (string $component) {
             /**
              * @var AssertableInertia $this
              */

@@ -1,20 +1,20 @@
 <?php
 
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
-
 use App\Models\User;
-use App\Models\Comment;
-use function Pest\Laravel\post;
-use function Pest\Laravel\actingAs;
 use Illuminate\Database\Eloquent\Model;
+
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\post;
 
 it('required authentication to like', function () {
     post(route('likes.store', ['post', 1]))
         ->assertRedirect(route('login'));
 });
 
-it('allow liking a likeable', function(Model $likeable) {
+it('allow liking a likeable', function (Model $likeable) {
     $user = User::factory()->create();
 
     actingAs($user)
@@ -23,17 +23,17 @@ it('allow liking a likeable', function(Model $likeable) {
         ->assertRedirect();
 
     $this->assertDatabaseHas(Like::class, [
-        'user_id' => $user->id,
-        'likeable_id' => $likeable->id,
-        'likeable_type' => $likeable->getMorphClass()
+        'user_id'       => $user->id,
+        'likeable_id'   => $likeable->id,
+        'likeable_type' => $likeable->getMorphClass(),
     ]);
 
     expect($likeable->refresh()->likes_count)->toBe(1);
 })
-->with([
-    fn() => Post::factory()->create(),
-    fn() => Comment::factory()->create()
-]);
+    ->with([
+        fn () => Post::factory()->create(),
+        fn () => Comment::factory()->create(),
+    ]);
 
 it('prevents liking something you already liked', function () {
     $like = Like::factory()->create();
@@ -64,7 +64,7 @@ it('required authentication to unlike', function () {
         ->assertRedirect(route('login'));
 });
 
-it('allow unliking a likeable', function(Model $likeable) {
+it('allow unliking a likeable', function (Model $likeable) {
     $user = User::factory()->create();
     Like::factory()->for($user)->for($likeable, 'likeable')->create();
 
@@ -77,10 +77,10 @@ it('allow unliking a likeable', function(Model $likeable) {
 
     expect($likeable->refresh()->likes_count)->toBe(0);
 })
-->with([
-    fn() => Post::factory()->create(['likes_count' => 1]),
-    fn() => Comment::factory()->create(['likes_count' => 1])
-]);
+    ->with([
+        fn () => Post::factory()->create(['likes_count' => 1]),
+        fn () => Comment::factory()->create(['likes_count' => 1]),
+    ]);
 
 it('prevents unliking something you havent liked', function () {
     $likeable = Post::factory()->create();

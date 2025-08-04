@@ -26,6 +26,9 @@
         "@tiptap/starter-kit": "^2.4.0",
         "@tiptap/vue-3": "^2.4.0",
         "date-fns": "^3.6.0",
+        "laravel-echo": "^2.1.7",
+        "pinia": "^3.0.3",
+        "pusher-js": "^8.4.0",
         "remixicon": "^4.3.0",
         "tiptap-markdown": "^0.8.10"
     }

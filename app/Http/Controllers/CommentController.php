@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-
     public function __construct()
     {
         $this->authorizeResource(Comment::class);
@@ -22,7 +21,7 @@ class CommentController extends Controller
         Comment::create([
             ...$request->validate(['body' => ['required', 'string', 'max:2500']]),
             'post_id'   => $post->id,
-            'user_id'   => $request->user()->id
+            'user_id'   => $request->user()->id,
         ]);
 
         return redirect($post->showRoute())

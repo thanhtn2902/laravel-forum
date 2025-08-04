@@ -1,11 +1,12 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PostController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,9 @@ Route::middleware([
 
     Route::post('/likes/{type}/{id}', [LikeController::class, 'store'])->name('likes.store');
     Route::delete('/likes/{type}/{id}', [LikeController::class, 'destroy'])->name('likes.destroy');
+
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 });
 
 Route::get('posts/{post}/{slug}', [PostController::class, 'show'])->name('posts.show');

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
@@ -8,6 +8,8 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import ConfirmationModalWrapper from '@/Components/ConfirmationModalWrapper.vue';
+import NotificationDropdown from '@/Components/NotificationDropdown.vue';
+import axios from 'axios';
 
 defineProps({
     title: String,
@@ -15,7 +17,7 @@ defineProps({
 
 const page = usePage();
 const showingNavigationDropdown = ref(false);
-const userData = computed(() => page.props.auth.user)
+const userData = computed(() => page.props.auth.user);
 
 const menu = [
     {
@@ -84,6 +86,11 @@ const logout = () => {
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <!-- Notifications -->
+                            <div v-if="userData" class="me-3">
+                                <NotificationDropdown />
+                            </div>
+
                             <!-- Settings Dropdown -->
                             <div v-if="userData" class="ms-3 relative">
                                 <Dropdown align="right" width="48">
@@ -112,6 +119,16 @@ const logout = () => {
                                         <DropdownLink :href="route('profile.show')">
                                             Profile
                                         </DropdownLink>
+
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            Other
+                                        </div>
+                                        <!-- Notifications -->
+                                        <DropdownLink :href="route('notifications.index')">
+                                            Notifications
+                                        </DropdownLink>
+
+                                        <div class="border-t border-gray-200" />
 
                                         <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
                                             API Tokens
@@ -190,6 +207,10 @@ const logout = () => {
                         </div>
 
                         <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink :href="route('notifications.index')" :active="route().current('notifications.index')">
+                                Notifications
+                            </ResponsiveNavLink>
+
                             <ResponsiveNavLink :href="route('profile.show')" :active="route().current('profile.show')">
                                 Profile
                             </ResponsiveNavLink>
