@@ -8,5 +8,6 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
+    // this comment shouldn't be here
     use AuthorizesRequests, ValidatesRequests;
 }
