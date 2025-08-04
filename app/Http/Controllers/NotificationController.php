@@ -56,7 +56,9 @@ class NotificationController extends Controller
             broadcast(new NotificationMarkedAsRead($user, null));
         }
 
-    }    /**
+    }
+
+    /**
      * Get notifications list for API (dropdown/ajax requests)
      */
     public function list(Request $request)

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 
 export const useNotificationStore = defineStore('notifications', () => {
@@ -7,15 +7,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     const notifications = ref([])
     const isLoading = ref(false)
     const isInitialized = ref(false)
-
-    // Getters
-    const unreadCount = computed(() => {
-        return notifications.value.filter(n => !n.read_at).length
-    })
-
-    const recentNotifications = computed(() => {
-        return notifications.value.slice(0, 10)
-    })
+    const unreadCount = ref(0)
 
     // Actions
     const initialize = async () => {
@@ -30,8 +22,9 @@ export const useNotificationStore = defineStore('notifications', () => {
 
         isLoading.value = true
         try {
-            const response = await axios.get(route('api.notifications.list'))
-            notifications.value = response.data.notifications || []
+            const { data } = await axios.get(route('api.notifications.list'))
+            notifications.value = data.notifications
+            unreadCount.value = data.unreadCount
         } catch (error) {
             console.error('Failed to fetch notifications:', error)
         } finally {
@@ -43,8 +36,6 @@ export const useNotificationStore = defineStore('notifications', () => {
         try {
             const payload = notificationId ? { mark_all: false, notification_id: notificationId} : { mark_all: true }
             await axios.patch(route('api.notifications.read'), payload)
-            // Real-time update will be handled by Echo event listener in components
-            console.log('marking done...')
         } catch (error) {
             console.error('Failed to mark notification(s) as read:', error)
             throw error
@@ -75,7 +66,6 @@ export const useNotificationStore = defineStore('notifications', () => {
 
         // Getters
         unreadCount,
-        recentNotifications,
 
         // Actions
         initialize,

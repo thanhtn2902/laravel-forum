@@ -10,7 +10,7 @@
                 v-if="notificationStore.unreadCount > 0"
                 class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full min-w-[1.25rem] h-5"
             >
-                {{ notificationStore.unreadCount >= 10 ? '10+' : notificationStore.unreadCount }}
+                {{ notificationStore.unreadCount > 10 ? '10+' : notificationStore.unreadCount }}
             </span>
         </button>
 
@@ -23,18 +23,11 @@
             <!-- Header -->
             <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-medium text-gray-900">Notifications</h3>
-                <Link
-                    :href="route('notifications.index')"
-                    class="text-sm text-blue-600 hover:text-blue-800"
-                    @click="closeDropdown"
-                >
-                    View all
-                </Link>
             </div>
 
             <!-- Notifications List -->
             <div class="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
-                <div v-if="notificationStore.recentNotifications.length === 0 && !notificationStore.isLoading" class="px-4 py-8 text-center">
+                <div v-if="notificationStore.notifications.length === 0 && !notificationStore.isLoading" class="px-4 py-8 text-center">
                     <BellIcon class="mx-auto h-8 w-8 text-gray-400" />
                     <p class="mt-2 text-sm text-gray-500">No new notifications</p>
                 </div>
@@ -47,7 +40,7 @@
 
                 <div v-else>
                     <div
-                        v-for="notification in notificationStore.recentNotifications"
+                        v-for="notification in notificationStore.notifications"
                         :key="notification.id"
                         class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 cursor-pointer"
                         :class="{ 'bg-blue-50': !notification.read_at }"
@@ -79,13 +72,12 @@
             </div>
 
             <!-- Footer -->
-            <div v-if="notificationStore.unreadCount > 0" class="px-4 py-3 border-t border-gray-200">
+            <div  class="px-4 py-3 border-t border-gray-200">
                 <button
-                    @click="markAllAsRead"
                     class="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
-                    :disabled="submitting"
+                    @click="viewAllNotifications"
                 >
-                    Mark all as read
+                    View all notifications
                 </button>
             </div>
         </div>
@@ -101,13 +93,18 @@
 
 <script setup>
 import { BellIcon, HandThumbUpIcon } from '@heroicons/vue/24/outline'
-import { Link, usePage } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { relativeDate } from '@/Utilities/Date.js'
 import { useNotifications } from '@/composables/useNotifications'
 
+defineProps({
+    unreadCount: {
+        type: Number,
+        default: 0
+    }
+})
 const isOpen = ref(false)
-const submitting = ref(false)
 const user = usePage().props.auth.user
 
 // Use the notification store
@@ -122,18 +119,9 @@ const closeDropdown = () => {
     isOpen.value = false
 }
 
-const markAllAsRead = async () => {
-    if (submitting.value) return // Prevent multiple calls
-
-    submitting.value = true
-    try {
-        await notificationStore.markedNotification()
-    } catch (error) {
-        console.error('Failed to mark all notifications as read:', error)
-    } finally {
-        submitting.value = false
-        closeDropdown()
-    }
+const viewAllNotifications = () => {
+    router.visit(route('notifications.index'))
+    closeDropdown()
 }
 
 const handleNotificationClick = async (notification) => {
@@ -161,7 +149,6 @@ onMounted(() => {
 
         // Listen for new notifications
         channel.notification((notification) => {
-            console.log('heyy')
             // Refetch notifications to ensure consistency
             notificationStore.fetchNotifications()
         })
@@ -175,6 +162,7 @@ onMounted(() => {
                 // Mark specific notification as read (use state mutation, not API call)
                 notificationStore.markNotificationAsRead(data.notification_id)
             }
+            notificationStore.fetchNotifications()
         })
 
     } else {
