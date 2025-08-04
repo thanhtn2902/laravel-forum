@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Topic;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TopicSeeder extends Seeder
@@ -15,30 +14,30 @@ class TopicSeeder extends Seeder
     {
         $data = [
             [
-                'slug' => 'general',
-                'name' => 'General',
-                'description' => 'Any and all things about films and movies.'
+                'slug'        => 'general',
+                'name'        => 'General',
+                'description' => 'Any and all things about films and movies.',
             ],
             [
-                'slug' => 'reviews',
-                'name' => 'Reviews',
-                'description' => 'What\'s the census on that latest flick? Read all about it here!'
+                'slug'        => 'reviews',
+                'name'        => 'Reviews',
+                'description' => 'What\'s the census on that latest flick? Read all about it here!',
             ],
             [
-                'slug' => 'question',
-                'name' => 'Question',
-                'description' => 'Didn\'t quite understand that one plot point? There are no stupid question'
+                'slug'        => 'question',
+                'name'        => 'Question',
+                'description' => 'Didn\'t quite understand that one plot point? There are no stupid question',
             ],
             [
-                'slug' => 'conspiracies',
-                'name' => 'Conspiracies',
-                'description' => 'Got a wild idea about how The Incredibles and Monster\'s Inc are connected? Spill the beans!'
+                'slug'        => 'conspiracies',
+                'name'        => 'Conspiracies',
+                'description' => 'Got a wild idea about how The Incredibles and Monster\'s Inc are connected? Spill the beans!',
             ],
             [
-                'slug' => 'fan-fic',
-                'name' => 'Fan Fiction',
-                'description' => 'Got a great idea for a sequel? Tell us about it and get the audience opinion.'
-            ]
+                'slug'        => 'fan-fic',
+                'name'        => 'Fan Fiction',
+                'description' => 'Got a great idea for a sequel? Tell us about it and get the audience opinion.',
+            ],
         ];
 
         Topic::upsert($data, ['slug']);

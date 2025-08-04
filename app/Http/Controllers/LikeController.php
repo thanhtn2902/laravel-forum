@@ -19,7 +19,7 @@ class LikeController extends Controller
         $this->authorize('create', [Like::class, $likeable]);
 
         $likeable->likes()->create([
-            'user_id' => $request->user()->id
+            'user_id' => $request->user()->id,
         ]);
 
         $likeable->increment('likes_count');
@@ -49,7 +49,7 @@ class LikeController extends Controller
          */
         $modelName = Relation::getMorphedModel($type);
 
-        if($modelName === null) {
+        if ($modelName === null) {
             throw new ModelNotFoundException();
         }
 

@@ -5,36 +5,36 @@ use Illuminate\Support\Str;
 
 use function Pest\Laravel\get;
 
-beforeEach(function() {
+beforeEach(function () {
     $this->initialPost = Post::factory()->create();
 });
 
-it('uses title case for titles', function() {
+it('uses title case for titles', function () {
     $post = Post::factory()->create(['title' => 'Hello, how are you?']);
 
     expect($post->title)->toBe('Hello, How Are You?');
 });
 
-it('can generate a route to the show page', function() {
+it('can generate a route to the show page', function () {
     expect($this->initialPost->showRoute())
         ->toBe(route('posts.show', [$this->initialPost, Str::slug($this->initialPost->title)]));
 });
 
-it('can generate additional query parameter on the show route', function() {
+it('can generate additional query parameter on the show route', function () {
     expect($this->initialPost->showRoute(['page' => 2]))
         ->toBe(route('posts.show', [$this->initialPost, Str::slug($this->initialPost->title), 'page' => 2]));
 });
 
-it('will redirect if the slug is incorrect', function(string $incorrectSlug) {
+it('will redirect if the slug is incorrect', function (string $incorrectSlug) {
     get(route('posts.show', [$this->initialPost, $incorrectSlug]))
         ->assertRedirect($this->initialPost->showRoute());
 })
-->with([
-    'foo-bar',
-    'hello'
-]);
+    ->with([
+        'foo-bar',
+        'hello',
+    ]);
 
-it('generate the html', function() {
+it('generate the html', function () {
     $post = Post::factory()->make(['body' => '## Hello World']);
     $post->save();
 

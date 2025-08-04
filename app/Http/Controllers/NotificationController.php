@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Resources\NotificationResource;
 use App\Events\NotificationMarkedAsRead;
+use App\Http\Resources\NotificationResource;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
@@ -34,7 +34,7 @@ class NotificationController extends Controller
         $notificationId = $request->input('notification_id');
 
         if ($request->input('mark_all') === false && $request->has('notification_id')) {
-                // Mark specific notification as read
+            // Mark specific notification as read
             $notification = $user->notifications()
                 ->where('id', $notificationId)
                 ->first();
@@ -48,11 +48,11 @@ class NotificationController extends Controller
 
         }
 
-        if($request->input('mark_all') === true) {
+        if ($request->input('mark_all') === true) {
             // Mark all unread notifications as read
             $user->unreadNotifications->markAsRead();
 
-             // Broadcast the update for all notifications (null means all)
+            // Broadcast the update for all notifications (null means all)
             broadcast(new NotificationMarkedAsRead($user, null));
         }
 
@@ -71,7 +71,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'notifications' => NotificationResource::collection($notifications),
-            'unreadCount' => $request->user()->unreadNotifications()->count()
+            'unreadCount'   => $request->user()->unreadNotifications()->count(),
         ]);
     }
 }

@@ -33,12 +33,12 @@ class LikeNotification extends Notification implements ShouldQueue
     public function toDatabase(object $notifiable): DatabaseMessage
     {
         return new DatabaseMessage([
-            'message' => $this->getMessage(),
-            'like_id' => $this->like->id,
-            'user_id' => $this->like->user_id,
-            'user_name' => $this->like->user->name,
-            'likeable_type' => $this->like->likeable_type,
-            'likeable_id' => $this->like->likeable_id,
+            'message'        => $this->getMessage(),
+            'like_id'        => $this->like->id,
+            'user_id'        => $this->like->user_id,
+            'user_name'      => $this->like->user->name,
+            'likeable_type'  => $this->like->likeable_type,
+            'likeable_id'    => $this->like->likeable_id,
             'likeable_title' => $this->getLikeableTitle(),
         ]);
     }
@@ -49,16 +49,16 @@ class LikeNotification extends Notification implements ShouldQueue
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'id' => $this->id,
-            'type' => get_class($this),
-            'message' => $this->getMessage(),
-            'like_id' => $this->like->id,
-            'user_id' => $this->like->user_id,
-            'user_name' => $this->like->user->name,
-            'likeable_type' => $this->like->likeable_type,
-            'likeable_id' => $this->like->likeable_id,
+            'id'             => $this->id,
+            'type'           => get_class($this),
+            'message'        => $this->getMessage(),
+            'like_id'        => $this->like->id,
+            'user_id'        => $this->like->user_id,
+            'user_name'      => $this->like->user->name,
+            'likeable_type'  => $this->like->likeable_type,
+            'likeable_id'    => $this->like->likeable_id,
             'likeable_title' => $this->getLikeableTitle(),
-            'created_at' => now(),
+            'created_at'     => now(),
         ]);
     }
 
@@ -70,12 +70,12 @@ class LikeNotification extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => $this->getMessage(),
-            'like_id' => $this->like->id,
-            'user_id' => $this->like->user_id,
-            'user_name' => $this->like->user->name,
-            'likeable_type' => $this->like->likeable_type,
-            'likeable_id' => $this->like->likeable_id,
+            'message'        => $this->getMessage(),
+            'like_id'        => $this->like->id,
+            'user_id'        => $this->like->user_id,
+            'user_name'      => $this->like->user->name,
+            'likeable_type'  => $this->like->likeable_type,
+            'likeable_id'    => $this->like->likeable_id,
             'likeable_title' => $this->getLikeableTitle(),
         ];
     }
@@ -94,7 +94,7 @@ class LikeNotification extends Notification implements ShouldQueue
             return $this->like->likeable->title;
         }
 
-        return substr($this->like->likeable->body, 0, 50) . '...';
+        return substr($this->like->likeable->body, 0, 50).'...';
     }
 
     private function getLikeableUrl(): string

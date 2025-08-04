@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Controllers;
 
 use App\Models\Comment;
@@ -15,8 +16,7 @@ it('required authentication to post a comment', function () {
         ->assertRedirect(route('login'));
 });
 
-
-it('can store a comment', function() {
+it('can store a comment', function () {
     $user = User::factory()->create();
     $post = Post::factory()->create();
 
@@ -27,12 +27,12 @@ it('can store a comment', function() {
     $this->assertDatabaseHas(Comment::class, [
         'post_id' => $post->id,
         'user_id' => $user->id,
-        'body'    => 'This is a comment'
+        'body'    => 'This is a comment',
     ]);
 
 });
 
-it('redirects to the post show page after create post', function() {
+it('redirects to the post show page after create post', function () {
     $post = Post::factory()->create();
 
     actingAs(User::factory()->create())
@@ -42,7 +42,7 @@ it('redirects to the post show page after create post', function() {
         ->assertRedirect($post->showRoute());
 });
 
-it('required a valid body when create comment', function($value) {
+it('required a valid body when create comment', function ($value) {
     $post = Post::factory()->create();
 
     actingAs(User::factory()->create())
@@ -55,7 +55,7 @@ it('required a valid body when create comment', function($value) {
     1,
     1.5,
     true,
-    str_repeat('a', 2501)
+    str_repeat('a', 2501),
 ]);
 
 it('required authentication to delete comment', function () {
@@ -63,7 +63,7 @@ it('required authentication to delete comment', function () {
         ->assertRedirect(route('login'));
 });
 
-it('can delete a comment', function() {
+it('can delete a comment', function () {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)->delete(route('comments.destroy', $comment));
@@ -71,7 +71,7 @@ it('can delete a comment', function() {
     $this->assertModelMissing($comment);
 });
 
-it('redirect to show page when delete success', function() {
+it('redirect to show page when delete success', function () {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
@@ -79,7 +79,7 @@ it('redirect to show page when delete success', function() {
         ->assertRedirect($comment->post->showRoute());
 });
 
-it('prevent deleting a comment not belong to you', function() {
+it('prevent deleting a comment not belong to you', function () {
     $comment = Comment::factory()->create();
 
     actingAs(User::factory()->create())
@@ -87,7 +87,7 @@ it('prevent deleting a comment not belong to you', function() {
         ->assertForbidden();
 });
 
-it('prevents deleting a comment posted over an hour ago', function() {
+it('prevents deleting a comment posted over an hour ago', function () {
     $this->freezeTime();
     $comment = Comment::factory()->create();
 
@@ -98,7 +98,7 @@ it('prevents deleting a comment posted over an hour ago', function() {
         ->assertForbidden();
 });
 
-it('redirects to the post show page with query parameter', function() {
+it('redirects to the post show page with query parameter', function () {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
@@ -106,12 +106,12 @@ it('redirects to the post show page with query parameter', function() {
         ->assertRedirect($comment->post->showRoute(['page' => 2]));
 });
 
-it('required authentication to update comment', function() {
+it('required authentication to update comment', function () {
     put(route('comments.update', Comment::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
-it('can update a comment', function() {
+it('can update a comment', function () {
     $comment = Comment::factory()->create(['body' => 'This is old post']);
 
     $newBody = 'This post has been update';
@@ -120,12 +120,12 @@ it('can update a comment', function() {
         ->put(route('comments.update', $comment), ['body' => $newBody]);
 
     $this->assertDatabaseHas(Comment::class, [
-        'id' => $comment->id,
-        'body' => $newBody
+        'id'   => $comment->id,
+        'body' => $newBody,
     ]);
 });
 
-it('redirect to the post show page after update post', function() {
+it('redirect to the post show page after update post', function () {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
@@ -133,7 +133,7 @@ it('redirect to the post show page after update post', function() {
         ->assertRedirect($comment->post->showRoute());
 });
 
-it('redirect to the correct page of comments', function() {
+it('redirect to the correct page of comments', function () {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
@@ -141,7 +141,7 @@ it('redirect to the correct page of comments', function() {
         ->assertRedirect($comment->post->showRoute(['page' => 2]));
 });
 
-it('cannot update comment from another user', function() {
+it('cannot update comment from another user', function () {
     $comment = Comment::factory()->create();
 
     actingAs(User::factory()->create())
@@ -149,17 +149,17 @@ it('cannot update comment from another user', function() {
         ->assertForbidden();
 });
 
-it('required a valid body when updating a comment', function($body) {
+it('required a valid body when updating a comment', function ($body) {
     $comment = Comment::factory()->create();
 
     actingAs($comment->user)
         ->put(route('comments.update', $comment), ['body' => $body])
         ->assertInvalid('body');
 })
-->with([
-    null,
-    1,
-    1.5,
-    true,
-    str_repeat('a', 2501)
-]);
+    ->with([
+        null,
+        1,
+        1.5,
+        true,
+        str_repeat('a', 2501),
+    ]);

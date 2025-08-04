@@ -3,8 +3,8 @@
 namespace App\Support;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\Finder\SplFileInfo;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
 
 class PostFixtures
 {
@@ -15,7 +15,7 @@ class PostFixtures
             ->map(fn (string $contents) => str($contents)->explode("\n", 2))
             ->map(fn (Collection $part) => [
                 'title' => str($part[0])->trim()->after('# '),
-                'body' => str($part[1])->trim()
+                'body'  => str($part[1])->trim(),
             ]));
     }
 }

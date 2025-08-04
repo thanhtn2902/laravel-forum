@@ -2,14 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\Like;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,9 +32,9 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
 
         Relation::enforceMorphMap([
-            'post' => Post::class,
+            'post'    => Post::class,
             'comment' => Comment::class,
-            'user' => User::class
+            'user'    => User::class,
         ]);
     }
 }
