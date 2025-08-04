@@ -1,7 +1,7 @@
 # Laravel Forum - Real-Time Discussion Platform
 
 <p align="center">
-    <img src="https://img.shields.io/badge/Laravel-10+-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+    <img src="https://img.shields.io/badge/Laravel-11+-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
     <img src="https://img.shields.io/badge/Vue.js-3-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="Vue.js">
     <img src="https://img.shields.io/badge/Inertia.js-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js">
     <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
@@ -33,7 +33,7 @@ A modern, feature-rich forum application built with Laravel and Vue.js, featurin
 ## 🏗️ Technical Architecture
 
 ### Backend Stack
-- **Laravel 10+**: Modern PHP framework with latest features
+- **Laravel 11+**: Modern PHP framework with latest features
 - **Laravel Reverb**: Official WebSocket server for real-time features
 - **Laravel Sanctum**: API authentication for secure endpoints
 - **Laravel Jetstream**: Complete authentication scaffolding
@@ -54,16 +54,6 @@ A modern, feature-rich forum application built with Laravel and Vue.js, featurin
 - Composer
 - MySQL/PostgreSQL
 
-## 🎯 Key Features Explained
-
-### Real-Time Notification Flow
-1. **User Action**: User likes a post/comment
-2. **Event Dispatch**: `LikeCreated` event is fired
-3. **Listener Execution**: `SendLikeNotification` processes the event
-4. **Database Storage**: Notification saved to database
-5. **WebSocket Broadcast**: Real-time event sent to user's private channel
-6. **Frontend Update**: Vue component receives and displays notification instantly
-
 
 ## 📈 Performance Features
 
@@ -82,14 +72,3 @@ A modern, feature-rich forum application built with Laravel and Vue.js, featurin
 ## 📄 License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## 🙏 Acknowledgments
-
-- [Laravel](https://laravel.com) - The PHP framework for web artisans
-- [Vue.js](https://vuejs.org) - The progressive JavaScript framework
-- [Inertia.js](https://inertiajs.com) - Build single-page apps without building an API
-- [Tailwind CSS](https://tailwindcss.com) - A utility-first CSS framework
-
----
-
-<p align="center">Made with ❤️ by <a href="https://github.com/thanhtn2902">thanhtn2902</a></p>
