@@ -69,6 +69,5 @@ A modern, feature-rich forum application built with Laravel and Vue.js, featurin
 - **Input Validation**: Comprehensive request validation
 - **Authorization Policies**: Model-based authorization
 
-## 📄 License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Inspired by Luke Downing 
+https://github.com/lukeraymonddowning
