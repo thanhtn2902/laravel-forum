@@ -8,7 +8,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  no-plans-to-merge:
+  laravel-pint:
     runs-on: ubuntu-latest
 
     steps:
