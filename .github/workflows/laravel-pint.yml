@@ -1,0 +1,31 @@
+name: Laravel Pint
+
+on:
+  pull_request:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  laravel-pint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install Laravel Pint
+        run: composer global require laravel/pint
+
+      - name: Run Laravel Pint
+        run: pint --test
+
+      - name: Push changes back to Repo
+        run: echo "Will do it later"
