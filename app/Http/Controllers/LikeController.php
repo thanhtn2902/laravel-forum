@@ -30,14 +30,13 @@ class LikeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, string $type, int $id)
-    {
+    public function destroy(Request $request, string $type, int $id){
         $likeable = $this->findLikeable($type, $id);
         $this->authorize('delete', [Like::class, $likeable]);
 
         $likeable->likes()->whereBelongsTo($request->user())->delete();
 
-        $likeable->decrement('likes_count');
+                    $likeable->decrement('likes_count');
 
         return back();
     }
