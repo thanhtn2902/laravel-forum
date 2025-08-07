@@ -11,6 +11,12 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        images: redis:7.4
+        ports:
+          - 6379:6379
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -20,6 +26,8 @@ jobs:
         with:
           php-version: '8.3'
           tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr
+
 
       - name: Install dependencies
         run: composer install -q --no-interaction
@@ -34,5 +42,4 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
           SCOUT_DRIVER: collection
-          SCOUT_QUEUE: false
         run: php artisan test --compact
