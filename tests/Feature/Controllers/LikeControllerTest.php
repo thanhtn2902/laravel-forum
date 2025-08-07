@@ -5,9 +5,14 @@ use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
+
+beforeEach(function () {
+    Event::fake();
+});
 
 it('required authentication to like', function () {
     post(route('likes.store', ['post', 1]))
