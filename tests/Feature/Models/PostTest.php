@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Models;
 
 use App\Models\Post;
@@ -68,12 +69,11 @@ describe('View Count Tests', function () {
     it('stores view count with correct Redis key format', function () {
         $this->post->incrementViews();
 
-        $expectedKey = "post_views:{$this->post->id}:" . now()->format('Y-m-d');
+        $expectedKey = "post_views:{$this->post->id}:".now()->format('Y-m-d');
         $value = Redis::get($expectedKey);
 
         expect((int) $value)->toBe(1);
     });
-
 
     it('handles multiple posts view counts independently', function () {
         $post2 = Post::factory()->create();
@@ -95,15 +95,15 @@ describe('View Count Tests', function () {
         expect($this->post->getViewsCount())->toBe(1);
 
         // Test that we can manually clear Redis keys
-        $key = "post_views:{$this->post->id}:" . now()->format('Y-m-d');
+        $key = "post_views:{$this->post->id}:".now()->format('Y-m-d');
         Redis::del($key);
         expect($this->post->getViewsCount())->toBe(0);
     });
 
     it('properly formats view keys and session keys', function () {
         // Get the expected keys
-        $viewKey = "post_views:{$this->post->id}:" . now()->format('Y-m-d');
-        $sessionKey = "post_viewed:{$this->post->id}:" . session()->getId();
+        $viewKey = "post_views:{$this->post->id}:".now()->format('Y-m-d');
+        $sessionKey = "post_viewed:{$this->post->id}:".session()->getId();
 
         // Increment views
         $this->post->incrementViews();
@@ -119,7 +119,7 @@ describe('View Count Tests', function () {
     it('demonstrates session-based view limiting concept', function () {
         // This test shows how the session limiting would work conceptually
         $sessionId = 'test-session-123';
-        $viewKey = "post_views:{$this->post->id}:" . now()->format('Y-m-d');
+        $viewKey = "post_views:{$this->post->id}:".now()->format('Y-m-d');
         $sessionKey = "post_viewed:{$this->post->id}:{$sessionId}";
 
         // Simulate first visit

@@ -64,7 +64,7 @@ class Post extends Model
     public function incrementViews(): void
     {
         $sessionKey = "post_viewed:{$this->id}:".session()->getId();
-        $viewKey = "post_views:{$this->id}:" . now()->format('Y-m-d');
+        $viewKey = "post_views:{$this->id}:".now()->format('Y-m-d');
 
         // Only increment if not already viewed in this session today
         if (!Redis::exists($sessionKey)) {
@@ -80,7 +80,8 @@ class Post extends Model
      */
     public function getViewsCount(): int
     {
-        $key = "post_views:{$this->id}:" . now()->format('Y-m-d');
+        $key = "post_views:{$this->id}:".now()->format('Y-m-d');
+
         return (int) Redis::get($key) ?: 0;
     }
 }
