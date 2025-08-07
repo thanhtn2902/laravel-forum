@@ -33,4 +33,5 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
+          SCOUT_DRIVER: null
         run: php artisan test --compact
