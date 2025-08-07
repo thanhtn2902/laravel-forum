@@ -37,5 +37,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "gh-noreply@gmail.com"
           git add .
-          git commit -m "Apply Laravel Pint formatting"
+          git commit -m "Apply Laravel Pint formatting" || exit 0
           git push
