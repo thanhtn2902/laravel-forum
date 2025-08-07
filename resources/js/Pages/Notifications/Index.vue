@@ -115,7 +115,6 @@ onMounted(async () => {
 
         // Listen for new notifications
         channel.notification((notification) => {
-            console.log('New notification received:', notification)
             // Add the new notification to the beginning of the array
             notificationStore.notifications.unshift(notification)
         })
