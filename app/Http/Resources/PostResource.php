@@ -33,6 +33,7 @@ class PostResource extends JsonResource
             'user'        => UserResource::make($this->whenLoaded('user')),
             'topic'       => TopicResource::make($this->whenLoaded('topic')),
             'likes_count' => Number::abbreviate($this->likes_count),
+            'views_count' => Number::abbreviate($this->getViewsCount()),
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
             'routes'      => [

@@ -82,6 +82,9 @@ class PostController extends Controller
 
         $post->load(['user', 'topic']);
 
+        // Increment view count
+        $post->incrementViews();
+
         return inertia('Posts/Show', [
             'post'     => fn () => PostResource::make($post)->withLikePermission(),
             'comments' => function () use ($post) {
