@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
@@ -54,5 +55,32 @@ class Post extends Model
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    /**
+     * Increment view count for this post in Redis cache
+     * Only increment once per session to avoid inflated counts
+     */
+    public function incrementViews(): void
+    {
+        $sessionKey = "post_viewed:{$this->id}:".session()->getId();
+        $viewKey = "post_views:{$this->id}:" . now()->format('Y-m-d');
+
+        // Only increment if not already viewed in this session today
+        if (!Redis::exists($sessionKey)) {
+            Redis::incr($viewKey);
+
+            // Mark as viewed in this session (expires at end of day)
+            Redis::set($sessionKey, true, now()->endOfDay()->diffInSeconds());
+        }
+    }
+
+    /**
+     * Get view count for this post from Redis cache
+     */
+    public function getViewsCount(): int
+    {
+        $key = "post_views:{$this->id}:" . now()->format('Y-m-d');
+        return (int) Redis::get($key) ?: 0;
     }
 }
