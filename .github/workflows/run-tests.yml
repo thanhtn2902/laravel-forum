@@ -16,13 +16,12 @@ jobs:
         image: redis:7.4
         ports:
           - 6379:6379
-      mysql:
-        image: mysql:8.0
+      mariadb:
+        image: mariadb:10.3
         ports:
           - 3306:3306
         env:
-          MYSQL_DATABASE: laravel
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
 
     steps:
       - name: Checkout code
@@ -46,5 +45,6 @@ jobs:
 
       - name: Run tests
         env:
+
           SCOUT_DRIVER: collection
         run: php artisan test --compact
