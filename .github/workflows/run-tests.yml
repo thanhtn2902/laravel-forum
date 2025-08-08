@@ -16,6 +16,14 @@ jobs:
         image: redis:7.4
         ports:
           - 6379:6379
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: laravel_forum_test_db
+          MYSQL_ROOT_PASSWORD: 123
+        ports:
+          - 3307:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -26,7 +34,7 @@ jobs:
         with:
           php-version: '8.3'
           tools: composer:v2
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr, pdo_mysql
 
 
       - name: Install dependencies
@@ -39,7 +47,5 @@ jobs:
 
       - name: Run tests
         env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ':memory:'
           SCOUT_DRIVER: collection
         run: php artisan test --compact
