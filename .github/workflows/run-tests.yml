@@ -16,12 +16,13 @@ jobs:
         image: redis:7.4
         ports:
           - 6379:6379
-      mariadb:
-        image: mariadb:10.3
-        ports:
-          - 3306:3306
+      mysql:
+        image: mysql:8.0
         env:
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+          MYSQL_DATABASE: laravel
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3307:3306
 
     steps:
       - name: Checkout code
@@ -32,7 +33,7 @@ jobs:
         with:
           php-version: '8.3'
           tools: composer:v2
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr, pdo_mysql
 
 
       - name: Install dependencies
@@ -45,6 +46,7 @@ jobs:
 
       - name: Run tests
         env:
-
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3307
           SCOUT_DRIVER: collection
         run: php artisan test --compact
