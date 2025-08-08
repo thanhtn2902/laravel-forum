@@ -47,7 +47,5 @@ jobs:
 
       - name: Run tests
         env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3307
           SCOUT_DRIVER: collection
         run: php artisan test --compact
