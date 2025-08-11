@@ -34,7 +34,7 @@ jobs:
         uses: shivammathur/cache-extensions@v1
         with:
           php-version: '8.3'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr, pdo_mysql
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, gd, redis, igbinary, msgpack, lzf, zstd, lz4, memcached, gmp, :php-psr, pdo_mysql
           key: extions-cache-v1
 
       - name: Cache extensions
@@ -49,7 +49,7 @@ jobs:
         with:
           php-version: '8.3'
           tools: composer:v2
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, redis, igbinary, msgpack, memcached, gmp, :php-psr, pdo_mysql
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, gd, redis, igbinary, msgpack, lzf, zstd, lz4, memcached, gmp, :php-psr, pdo_mysql
 
       - name: Get composer cache dir
         id: composer-cache-dir
