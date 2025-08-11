@@ -27,7 +27,7 @@ it('should return the correct component', function () {
 
 // index page test
 it('passes posts to the post index page', function () {
-    $posts = Post::factory(3)->create();
+    $posts = Post::factory(5)->create();
 
     $posts->load(['user', 'topic']);
 
