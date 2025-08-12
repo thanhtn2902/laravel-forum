@@ -1,17 +1,20 @@
 <?php
 
-use App\Models\Comment;
+use App\Listeners\SendLikeNotification;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Comment;
+use App\Events\LikeCreated;
+use function Pest\Laravel\post;
+use function Pest\Laravel\actingAs;
 use Illuminate\Support\Facades\Event;
 
-use function Pest\Laravel\actingAs;
-use function Pest\Laravel\post;
+use Illuminate\Database\Eloquent\Model;
 
 beforeEach(function () {
     Event::fake();
+    $this->user = User::factory()->create();
 });
 
 it('required authentication to like', function () {
@@ -20,19 +23,22 @@ it('required authentication to like', function () {
 });
 
 it('allow liking a likeable', function (Model $likeable) {
-    $user = User::factory()->create();
-
-    actingAs($user)
+    actingAs($this->user)
         ->fromRoute('dashboard')
         ->post(route('likes.store', [$likeable->getMorphClass(), $likeable->id]))
         ->assertRedirect();
 
     $this->assertDatabaseHas(Like::class, [
-        'user_id'       => $user->id,
+        'user_id'       => $this->user->id,
         'likeable_id'   => $likeable->id,
         'likeable_type' => $likeable->getMorphClass(),
     ]);
 
+    Event::assertDispatched(LikeCreated::class);
+    Event::assertListening(
+        LikeCreated::class,
+        SendLikeNotification::class
+    );
     expect($likeable->refresh()->likes_count)->toBe(1);
 })
     ->with([
@@ -50,15 +56,13 @@ it('prevents liking something you already liked', function () {
 });
 
 it('it only allow supported model', function () {
-    $user = User::factory()->create();
-
-    actingAs($user)
-        ->post(route('likes.store', [$user->getMorphClass(), $user->id]))
+    actingAs($this->user)
+        ->post(route('likes.store', [$this->user->getMorphClass(), $this->user->id]))
         ->assertForbidden();
 });
 
 it('throws a 404 if a type is unsupported', function () {
-    actingAs(User::factory()->create())
+    actingAs($this->user)
         ->post(route('likes.store', ['foo', 1]))
         ->assertNotFound();
 });
@@ -70,10 +74,9 @@ it('required authentication to unlike', function () {
 });
 
 it('allow unliking a likeable', function (Model $likeable) {
-    $user = User::factory()->create();
-    Like::factory()->for($user)->for($likeable, 'likeable')->create();
+    Like::factory()->for($this->user)->for($likeable, 'likeable')->create();
 
-    actingAs($user)
+    actingAs($this->user)
         ->fromRoute('dashboard')
         ->delete(route('likes.destroy', [$likeable->getMorphClass(), $likeable->id]))
         ->assertRedirect('dashboard');
@@ -90,21 +93,21 @@ it('allow unliking a likeable', function (Model $likeable) {
 it('prevents unliking something you havent liked', function () {
     $likeable = Post::factory()->create();
 
-    actingAs(User::factory()->create())
+    actingAs($this->user)
         ->delete(route('likes.destroy', [$likeable->getMorphClass(), $likeable->id]))
         ->assertForbidden();
 });
 
 it('it only allow supported model when unlike', function () {
-    $user = User::factory()->create();
+    $this->user = User::factory()->create();
 
-    actingAs($user)
-        ->delete(route('likes.destroy', [$user->getMorphClass(), $user->id]))
+    actingAs($this->user)
+        ->delete(route('likes.destroy', [$this->user->getMorphClass(), $this->user->id]))
         ->assertForbidden();
 });
 
 it('throws a 404 if a type is unsupported when unlike', function () {
-    actingAs(User::factory()->create())
+    actingAs($this->user)
         ->post(route('likes.store', ['foo', 1]))
         ->assertNotFound();
 });
