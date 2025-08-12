@@ -8,6 +8,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class PostFixtures
 {
+    /**
+     *  @codeCoverageIgnore
+     */
     public static function getFixtures(): Collection
     {
         return once(fn () => collect(File::files(database_path('factories/fixtures/posts')))
