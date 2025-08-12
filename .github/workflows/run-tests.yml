@@ -33,6 +33,7 @@ jobs:
         uses: ./.github/actions/setup
         with:
           php-version: '8.3'
+          coverage: 'xdebug'
 
       - name: Install dependencies
         run: composer install -q --no-interaction
@@ -45,4 +46,4 @@ jobs:
       - name: Run tests
         env:
           SCOUT_DRIVER: collection
-        run: php artisan test --compact
+        run: php artisan test --compact --coverage --min=75
