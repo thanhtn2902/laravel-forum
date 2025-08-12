@@ -1,16 +1,16 @@
 <?php
 
+use App\Events\LikeCreated;
 use App\Listeners\SendLikeNotification;
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
-use App\Events\LikeCreated;
-use function Pest\Laravel\post;
-use function Pest\Laravel\actingAs;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 
-use Illuminate\Database\Eloquent\Model;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\post;
 
 beforeEach(function () {
     Event::fake();

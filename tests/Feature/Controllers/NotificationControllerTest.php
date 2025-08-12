@@ -1,15 +1,15 @@
 <?php
 
+use App\Events\NotificationMarkedAsRead;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\LikeNotification;
+use Illuminate\Support\Facades\Event;
+
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\patch;
-use function Pest\Laravel\actingAs;
-use Illuminate\Support\Facades\Event;
-use App\Notifications\LikeNotification;
-
-use App\Events\NotificationMarkedAsRead;
 
 beforeEach(function () {
     $this->user = User::factory()->create(['name' => fake()->name()]);
@@ -35,9 +35,9 @@ describe('index method', function () {
 
         foreach ($posts as $index => $post) {
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
 
             // Send notification to our test user
@@ -63,9 +63,9 @@ describe('index method', function () {
 
         foreach ($posts as $post) {
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
 
             $this->user->notify(new LikeNotification($like));
@@ -89,10 +89,10 @@ describe('index method', function () {
         // Create old notification
         $oldPost = Post::factory()->create();
         $oldLike = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $oldPost->id,
-            'created_at' => now()->subHours(2),
+            'likeable_id'   => $oldPost->id,
+            'created_at'    => now()->subHours(2),
         ]);
         $this->user->notify(new LikeNotification($oldLike));
 
@@ -100,9 +100,9 @@ describe('index method', function () {
         sleep(1);
         $newPost = Post::factory()->create();
         $newLike = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $newPost->id,
+            'likeable_id'   => $newPost->id,
         ]);
         $this->user->notify(new LikeNotification($newLike));
 
@@ -130,9 +130,9 @@ describe('markAsRead method', function () {
         // Create a test notification using real notification system
         $post = Post::factory()->create();
         $like = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $post->id,
+            'likeable_id'   => $post->id,
         ]);
 
         $this->user->notify(new LikeNotification($like));
@@ -142,7 +142,7 @@ describe('markAsRead method', function () {
 
         actingAs($this->user)
             ->patch(route('api.notifications.read'), [
-                'mark_all' => false,
+                'mark_all'        => false,
                 'notification_id' => $notification->id,
             ]);
 
@@ -156,9 +156,9 @@ describe('markAsRead method', function () {
         for ($i = 0; $i < 3; $i++) {
             $post = Post::factory()->create();
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
             $this->user->notify(new LikeNotification($like));
         }
@@ -182,7 +182,7 @@ describe('markAsRead method', function () {
 
         $response = actingAs($this->user)
             ->patch(route('api.notifications.read'), [
-                'mark_all' => false,
+                'mark_all'        => false,
                 'notification_id' => $nonExistentId,
             ]);
 
@@ -198,9 +198,9 @@ describe('markAsRead method', function () {
 
         $post = Post::factory()->create();
         $like = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $post->id,
+            'likeable_id'   => $post->id,
         ]);
 
         // Send notification to different user
@@ -209,7 +209,7 @@ describe('markAsRead method', function () {
 
         actingAs($this->user)
             ->patch(route('api.notifications.read'), [
-                'mark_all' => false,
+                'mark_all'        => false,
                 'notification_id' => $notification->id,
             ]);
 
@@ -233,9 +233,9 @@ describe('list method', function () {
         for ($i = 0; $i < 3; $i++) {
             $post = Post::factory()->create();
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
 
             $this->user->notify(new LikeNotification($like));
@@ -258,9 +258,9 @@ describe('list method', function () {
                         'read_at',
                         'created_at',
                         'updated_at',
-                    ]
+                    ],
                 ],
-                'unreadCount'
+                'unreadCount',
             ]);
 
         $json = $response->json();
@@ -273,9 +273,9 @@ describe('list method', function () {
         for ($i = 0; $i < 15; $i++) {
             $post = Post::factory()->create();
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
 
             $this->user->notify(new LikeNotification($like));
@@ -292,9 +292,9 @@ describe('list method', function () {
     it('returns notifications in latest order', function () {
         $oldPost = Post::factory()->create();
         $oldLike = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $oldPost->id,
+            'likeable_id'   => $oldPost->id,
         ]);
         $this->user->notify(new LikeNotification($oldLike));
 
@@ -303,9 +303,9 @@ describe('list method', function () {
 
         $newPost = Post::factory()->create();
         $newLike = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $newPost->id,
+            'likeable_id'   => $newPost->id,
         ]);
         $this->user->notify(new LikeNotification($newLike));
 
@@ -322,9 +322,9 @@ describe('list method', function () {
         for ($i = 0; $i < 5; $i++) {
             $post = Post::factory()->create();
             $like = Like::factory()->create([
-                'user_id' => $this->otherUser->id,
+                'user_id'       => $this->otherUser->id,
                 'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
+                'likeable_id'   => $post->id,
             ]);
 
             $this->user->notify(new LikeNotification($like));
@@ -360,18 +360,18 @@ describe('list method', function () {
         // Create notification for current user
         $post1 = Post::factory()->create();
         $like1 = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $post1->id,
+            'likeable_id'   => $post1->id,
         ]);
         $this->user->notify(new LikeNotification($like1));
 
         // Create notification for other user
         $post2 = Post::factory()->create();
         $like2 = Like::factory()->create([
-            'user_id' => $this->otherUser->id,
+            'user_id'       => $this->otherUser->id,
             'likeable_type' => Post::class,
-            'likeable_id' => $post2->id,
+            'likeable_id'   => $post2->id,
         ]);
         $anotherUser->notify(new LikeNotification($like2));
 
