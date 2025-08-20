@@ -30,6 +30,7 @@
         "pinia": "^3.0.3",
         "pusher-js": "^8.4.0",
         "remixicon": "^4.3.0",
-        "tiptap-markdown": "^0.8.10"
+        "tiptap-markdown": "^0.8.10",
+        "ziggy-js": "^2.5.3"
     }
 }
