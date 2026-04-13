@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Notifications\LikeNotification;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -178,7 +179,7 @@ describe('markAsRead method', function () {
     });
 
     it('does nothing if notification does not exist', function () {
-        $nonExistentId = \Illuminate\Support\Str::uuid();
+        $nonExistentId = Str::uuid();
 
         $response = actingAs($this->user)
             ->patch(route('api.notifications.read'), [
